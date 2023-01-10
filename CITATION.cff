@@ -1,0 +1,43 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Decoding Attended Spatial Location during Complex
+  Scene Analysis with fNIRS
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Matthew
+    email: mhn@bu.edu
+    affiliation: >-
+      Neurophotonics Center, Department of Biomedical
+      Engineering, Boston University
+    orcid: 'https://orcid.org/0000-0001-5232-3352'
+    family-names: Ning
+  - given-names: Meryem
+    email: mayucel@bu.edu
+    affiliation: >-
+      Neurophotonics Center, Department of Biomedical
+      Engineering, Boston University
+    family-names: Yücel
+  - given-names: Alexander
+    family-names: Von Lühmann
+    email: avolu@bu.edu
+    affiliation: >-
+      Neurophotonics Center, Department of      
+      Biomedical Engineering, Boston University
+  - given-names: David
+    family-names: Boas
+    email: dboas@bu.edu
+    affiliation: >-
+      Neurophotonics Center, Department of Biomedical
+      Engineering, Boston University
+  - given-names: Kamal
+    email: kamalsen@bu.edu
+    affiliation: >-
+      Neurophotonics Center, Department of Biomedical
+      Engineering, Boston University
+    family-names: Sen

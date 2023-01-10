@@ -1,0 +1,4 @@
+function S = computeEstimatedNoiseCov()
+
+
+end

@@ -1,0 +1,18 @@
+1. resample
+2. find # of coefficients at max level
+3. half-point symmetric extension both X and Y 
+
+4. recompute max level of decomposition using extended signal Y (whole time, i thought we're supposed to do DWT on trend itself???)
+5. get coefficients up to max level and estimate power (or variance) of fBm using equation 23 in Jung's paper, using var of wavelet coefficients of Y.
+
+6. Using same max level of decomposition as Y, apply DWT to basis X.
+7. Compute universal prior distribution for all levels, normalize by its total sum and adjust scale by scale to meanP (not sure why). Will not use until later.
+8. construct A matrix
+9. construct weighted A matrix with covariance matrix from step 4.
+10. finally, get MLE of DWT coefficients of trend, line 164 of code.
+11. Split coefficients above and below J0 level and save to two different variables. Equation 20 of Jung's paper represents MLE of Wθ, not θ.
+12. Perform inverse DWT on MLE of Wθ using -J0 level and remove extended segments from step 3.
+13. Fixed at J0 level, compute MDL for different number of coefficients at J0 level to delete: Sort coefficients in ascending order and compute MDL as a function of total number of coefficients from level J0 to J (equation 35), the sigma squared is the var of the noise (equation 27 of Jung's paper)
+14. Find and save value of minimum MDL as well as number of coefficients to delete.
+15. For actual detrending, loop through channel
+	15.1. 

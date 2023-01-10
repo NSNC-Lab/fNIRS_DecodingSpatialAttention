@@ -1,0 +1,3 @@
+[submodule "Homer3"]
+	path = Homer3
+	url = https://github.com/BUNPC/Homer3

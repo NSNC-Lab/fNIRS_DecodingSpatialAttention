@@ -2,7 +2,7 @@
 
 
 [![Stable Version](https://img.shields.io/badge/fNIRS-v1.0.0-blue)](https://github.com/NoPenguinsLand/fNIRSCodes_Manuscript)
-[![Build Status](https://github.com/ NSNC-Lab/fNIRS_DecodingSpatialAttention/actions/workflows/github-actions-demo.yml/badge.svg)](https://github.com/NSNC-Lab/fNIRS_DecodingSpatialAttention/actions)
+[![Build Status](https://github.com/NSNC-Lab/fNIRS_DecodingSpatialAttention/actions/workflows/github-actions-demo.yml/badge.svg)](https://github.com/NSNC-Lab/fNIRS_DecodingSpatialAttention/actions)
 [![Mirror](https://img.shields.io/badge/Mirror-Bitbucket-blue)](https://bitbucket.org/nopenguinsland/fnirscodes_manuscript_mirror/src/master/)
 
  For "Decoding Attended Spatial Location during Complex Scene Analysis with fNIRS."

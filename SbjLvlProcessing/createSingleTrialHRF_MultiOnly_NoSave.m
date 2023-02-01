@@ -1,10 +1,31 @@
-% Extract single HRF from dcNew variable, the output of GLM fitting function
-% save to mat file.
-% For sbj 12 and after
-
-% For allSMultiple, numClasses is predetermined.
+% STATUS: Active
+% 
+% SYNTAX:
+% [singleTrialHRFHbOM, singleTrialHRFHbRM, singleTrialHRFHbTM] ...
+%   = createSingleTrialHRF_MultiOnly_NoSave(trialsCont, allSMultiple)
+% 
+% DESCRIPTION:
+% Reformat continuous data format (channels x time) into epoched data
+%   format (channels x time x trials). Split into 3 different chromophores.
+% 
+% RESTRICTION:
+% None.
+% 
+% INPUTS:
+% trialsCont - 2D double array: continuous data array (channels x time)
+% allSMultiple - 1D double array (1 x trials): start time of trial (in
+%   sec).
 %
-% Fixed rounding error!
+% RETURNED VARIABLES:
+% singleTrialHRFHbOM - 3D double array: epoched data array for HbO
+% singleTrialHRFHbRM - 3D double array: epoched data array for HbR
+% singleTrialHRFHbTM - 3D double array: epoched data array for HbT
+% 
+% FILES SAVED:
+% None.
+% 
+% PLOTTING:
+% None.
 
 function [singleTrialHRFHbOM, singleTrialHRFHbRM, singleTrialHRFHbTM] ...
     = createSingleTrialHRF_MultiOnly_NoSave(trialsCont, allSMultiple)

@@ -6,7 +6,49 @@
 
 % Used for IPS
 
-function [performanceLDALedoitHbO] = ...
+% STATUS: Inactive(?)
+% 
+% SYNTAX:
+% [performanceLDALedoit] = ...
+%   calcCumSum_DiffStartT_AllChn_Final_NoSave(sbjNum,trialsTr,trialsTst,...
+%       movieListTrain,movieListTest,numClasses,mlActAuto)
+% 
+% DESCRIPTION:
+% Perform cross validation where SS beta coefficients from training fold 
+%   is passed to test fold. Perform all-channel classification using rLDA
+%   classifier. Test different decision windows over the duration of trial.
+%   1 sec window length.
+% 
+% RESTRICTION:
+% None.
+% 
+% INPUTS:
+% sbjNum - string: subject ID
+% trialsTr - training dataset. 3D double array: channel x time x trial
+% trialsTst - test dataset. 3D double array: channel x time x trial
+% movieListTrain - trials info for training dataset. numTrials x 5 double array:
+%       col 1: index of target movies in uniqueMovies
+%       col 2: index of spatial location
+%       col 3: boolean: masker is fixed or random
+%       col 4: index of masker movies in fixedMaskerList(?)
+%       col 5: boolean: condition is target-alone or target+maskers
+% movieListTest - trials info for test dataset. same structure as movieListTrain
+% numClasses - int: number of classes for classification.
+% mlActAuto - 1x1 cell array containing 1D int array of channel list of 2
+%   different wavelengths
+% timeLen - 1D double array of window lengths to test, in sec.
+%
+% RETURNED VARIABLES:
+% performanceLDALedoit - decoding performance of rLDA classifier for 
+%   each decision window. 1D double array: 1 x time windows.
+% 
+% FILES SAVED:
+% None.
+% 
+% PLOTTING:
+% None.
+
+function [performanceLDALedoit] = ...
     calcCumSum_DiffStartT_AllChn_Final_NoSave(sbjNum,trialsTr,trialsTst,movieListTrain,movieListTest,numClasses,mlActAuto)
 
 rawDataDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];
@@ -53,7 +95,7 @@ trialsTst = offsetTrials(trialsTst,zeroT);
 % [trialsTr,movieIdx] = keepCorrectTrials_Special(sbjNum,trialsTr,behFN,numClasses,movieListTrain);
 % [trialsTst,movieListTest] = keepCorrectTrials_Special(sbjNum,trialsTst,behFN,numClasses,movieListTest);
 
-performanceLDALedoitHbO = zeros(1,length(timePt));
+performanceLDALedoit = zeros(1,length(timePt));
 % performanceLDACERNNHbO = zeros(1,length(timePt));
 % performanceCosineKNN = zeros(1,length(timePt));
 % %performanceLogRegHbO = zeros(1,length(timePt));
@@ -74,7 +116,7 @@ for i2 = 2:length(timePt)
     %[performanceLDALedoitHbO(1,i2)] = ...
     %    train_RLDA_Ledoit_TrTst(cumsumTr,cumsumTst,mlList,numChn,numClasses,movieIdx,movieListTest);
     
-    [performanceLDALedoitHbO(1,i2)] = train_RLDA_Ledoit_TrTst(cumsumTr,cumsumTst,mlActAuto,numChn,numClasses,movieListTrain,movieListTest);
+    [performanceLDALedoit(1,i2)] = train_RLDA_Ledoit_TrTst(cumsumTr,cumsumTst,mlActAuto,numChn,numClasses,movieListTrain,movieListTest);
 %     [performanceLDACERNNHbO(1,i2)] = train_RLDA_CERNN_TrTst(cumsumTr,cumsumTst,mlList,numChn,numClasses,movieListTrain,movieListTest);
 %     % replace this one with Cosine KNN
 %     %[performanceLogRegHbO(1,i2)] = trainClassifierLogisticRegressionHRF_TrTst(cumsumTr,cumsumTst,mlList,numChn,numClasses,movieListTrain,movieListTest);

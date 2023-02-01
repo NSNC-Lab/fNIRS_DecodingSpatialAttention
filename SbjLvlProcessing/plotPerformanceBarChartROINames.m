@@ -2,6 +2,8 @@
 % new. Use trials from dcNew var
 % For sbj 12 and after
 
+
+
 function plotPerformanceBarChartROINames(sbjNum,perfVar,tInd,featureName,saveOp,sortOp,maxTOp)
 
 figSaveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum) '\Figures\Classification'];

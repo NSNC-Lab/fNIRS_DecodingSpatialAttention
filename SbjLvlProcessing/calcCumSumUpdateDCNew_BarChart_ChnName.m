@@ -1,3 +1,5 @@
+% Status: Inactive
+% 
 % split into single and multi groups.
 % new. Use trials from dcNew var
 % Plot bar chart by channel using ROI names.

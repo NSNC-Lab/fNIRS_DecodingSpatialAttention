@@ -1,4 +1,11 @@
-% GLM Cross validation. 2 Rounds of GLM Fitting.
+% GLM Cross validation. 2 rounds of GLM Fitting nested according to this
+% paper:
+% von Lühmann A, Ortega-Martinez A, Boas DA and Yücel MA (2020) Using the 
+%   General Linear Model to Improve Performance in fNIRS Single Trial 
+%   Analysis and Classification: A Perspective. Front. Hum. Neurosci. 
+%   14:30. doi: 10.3389/fnhum.2020.00030
+% Problem: severe overfitting.
+% Experimental, not for publication.
 % For sbj 12 and after
 
 function preprocessFNIRS07_MultiOnly(sbjNum,rawDataFN,respData,numClasses)

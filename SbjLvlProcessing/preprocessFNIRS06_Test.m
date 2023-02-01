@@ -1,8 +1,4 @@
-% 4/11/2022: For testing GLM. Multi only.
-% this starts with nirs files so can run again to recreate snirf files.
-% this combine nirs files so we can compute HRF from whole time series.
-% Skip pruning step
-% Different parameters
+% Inactive.
 
 function preprocessFNIRS06_Test(sbjNum,rawDataFN,movieList)
 saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];

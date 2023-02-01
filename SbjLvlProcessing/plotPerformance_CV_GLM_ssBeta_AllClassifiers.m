@@ -1,6 +1,37 @@
-% Bar chart for more classifier option, fixed at 2s after cue onset.
-% Not for publication. For validation against strange logistic
-% regression/linear SVM results
+% STATUS: experimental. Not for publication.
+% 
+% SYNTAX:
+% plotPerformance_CV_GLM_ssBeta_AllClassifiers(sbjNum,numClasses,saveOp)
+% 
+% DESCRIPTION:
+% Plot decoding performance (accuracies) of a subject as a function of
+% trial timeline for 6 different classifiers.
+% 
+% RESTRICTION:
+% Only for sbj 08 and 10.
+% 
+% INPUTS:
+% s - struct containing parameters. Ex: variable 's' in
+%   '\RawDatafNIRS\Experiment12\12.mat'.
+% numClasses - int: number of classes for classification.
+%   2 for classification between left and right.
+%   3 for classification between left, right & center.
+% saveOp - int: option to save results
+%       0 - don't save results
+%       1 - save results
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% PREREQUISITES:
+% TODO
+% 
+% FILES SAVED:
+% 1) save figure. File name depends on parameters.
+% 
+% PLOTTING:
+% Plot figure of decoding performance as a function of trial timeline for 6
+% different classifiers.
 
 function plotPerformance_CV_GLM_ssBeta_AllClassifiers(sbjNum,numClasses,saveOp)
 

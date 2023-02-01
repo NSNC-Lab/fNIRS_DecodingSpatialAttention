@@ -1,8 +1,42 @@
-% Add repts and CI. Used for publication
+% STATUS: Inactive(?)
+% 
+% SYNTAX:
+% performanceLDA = calcCumSum_DiffStartT_SingleChn_NoSave(sbjNum,...
+%   trialsTr,trialsTst,movieListTrain,movieListTest,numClasses,mlActAuto)
+% 
+% DESCRIPTION:
+% Perform cross Validation where SS beta coefficients from training fold 
+%   is passed to test fold. Perform single-channel classification using 
+%   rLDA classifier. Test different decision windows over the duration of
+%   trial. 1 sec window length.
+% 
+% RESTRICTION:
+% None.
+% 
+% INPUTS:
+% sbjNum - string: subject ID
+% trialsTr - training dataset. 3D double array: channel x time x trial
+% trialsTst - test dataset. 3D double array: channel x time x trial
+% movieListTrain - trials info for training dataset. numTrials x 5 double array:
+%       col 1: index of target movies in uniqueMovies
+%       col 2: index of spatial location
+%       col 3: boolean: masker is fixed or random
+%       col 4: index of masker movies in fixedMaskerList(?)
+%       col 5: boolean: condition is target-alone or target+maskers
+% movieListTest - trials info for test dataset. same structure as movieListTrain
+% numClasses - int: number of classes for classification.
+% mlActAuto - 1x1 cell array containing 1D int array of channel list of 2
+%   different wavelengths
 %
-% Each array is channels x time x trial
-% This use cross-validation where GLM is computed for each training fold
-% and SS beta coefficients from training folds are used for test fold.
+% RETURNED VARIABLES:
+% performanceLDALedoit - decoding performance of rLDA classifier for 
+%   each decision window. 1D double array: 1 x time windows.
+% 
+% FILES SAVED:
+% None.
+% 
+% PLOTTING:
+% None.
 
 function performanceLDA = calcCumSum_DiffStartT_SingleChn_NoSave(sbjNum,...
     trialsTr,trialsTst,movieListTrain,movieListTest,numClasses,mlActAuto)

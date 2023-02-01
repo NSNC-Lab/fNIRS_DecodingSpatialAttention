@@ -1,11 +1,30 @@
-% Arithmetic average of HRFs
-% Light line color, plot ind HRFs
-% Different processing for sbj 08 and 10 because they use old SD design and
-% has both single and multi conditions
-% new codes, ignore grpPlotHRF
-
-% plotAllHRF_Grp_ChnCriteria_Fig4 used Welch t-test. Here use standard
-% t-test.
+% STATUS: active
+% 
+% SYNTAX:
+% plotAllHRF_Grp_ChnCriteria_Fig4_TTest(saveOp,opHBCorrected)
+% 
+% DESCRIPTION:
+% Plot HRFs for all 3 chromophores and spatial locations, grouped by task
+%   performance. plotAllHRF_Grp_ChnCriteria_Fig4 used Welch t-test. Here
+%   use standard t-test.
+% 
+% RESTRICTION:
+% None.
+% 
+% INPUTS:
+% saveOp - int: option to save figure.
+%       0 - don't save
+%       1 - save
+% opHBCorrected - int: option to use corrected p-value
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% save figure of HRFs.
+% 
+% PLOTTING:
+% Figure of HRFs
 
 function plotAllHRF_Grp_ChnCriteria_Fig4_TTest(saveOp,opHBCorrected)
 
@@ -103,7 +122,8 @@ tRangeIdx = [tRangeStart:1:tRangeEnd];
 for i = 1:length(goodSbjList)
     sbjNum = goodSbjList{i};
     saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];
-    load([saveDir filesep 'intermediateOutputsCombined_Basis1_10Hz.mat'],'dcAvg','mlActAuto','beta','bvar','hmrstats');
+    load([saveDir filesep 'intermediateOutputsCombined_Basis1.mat'],'dcAvg','mlActAuto','beta','bvar','hmrstats');
+    %load([saveDir filesep 'intermediateOutputsCombined_Basis1_10Hz.mat'],'dcAvg','mlActAuto','beta','bvar','hmrstats');
     
     betaVar = beta{1};
     
@@ -189,7 +209,7 @@ sigDiffGood = sigDiffGood./length(goodSbjList);
 for i = 1:length(badSbjList)
     sbjNum = badSbjList{i};
     saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];
-    load([saveDir filesep 'intermediateOutputsCombined_Basis1_10Hz.mat'],'dcAvg','mlActAuto','beta','bvar','hmrstats');
+    load([saveDir filesep 'intermediateOutputsCombined_Basis1.mat'],'dcAvg','mlActAuto','beta','bvar','hmrstats');
     
     betaVar = beta{1};
     
@@ -668,7 +688,7 @@ end
 
 titleStr = sprintf('%s        %s        %s',LRMark,LCMark,RCMark);
 %title(['HbR ' chnName(leftChnNum)]);
-title(['HbR Left High']);
+title(['HbT Left High']);
 subtitle(titleStr);
 
 % Left HbT Bad
@@ -727,7 +747,7 @@ end
 
 titleStr = sprintf('%s        %s        %s',LRMark,LCMark,RCMark);
 %title(['HbR ' chnName(leftChnNum)]);
-title(['HbO Left Low']);
+title(['HbT Left Low']);
 subtitle(titleStr);
 
 % Right HbO Good
@@ -1010,7 +1030,7 @@ end
 
 titleStr = sprintf('%s        %s        %s',LRMark,LCMark,RCMark);
 %title(['HbR ' chnName(rightChnNum)]);
-title(['HbR Right High']);
+title(['HbT Right High']);
 subtitle(titleStr);
 
 % Right HbT Bad
@@ -1069,7 +1089,7 @@ end
 
 titleStr = sprintf('%s        %s        %s',LRMark,LCMark,RCMark);
 %title(['HbR ' chnName(rightChnNum)]);
-title(['HbR Right Low']);
+title(['HbT Right Low']);
 subtitle(titleStr);
 
 

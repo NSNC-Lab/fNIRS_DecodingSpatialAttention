@@ -1,7 +1,38 @@
-% this starts with nirs files so can run again to recreate snirf files.
-% this combine nirs files so we can compute HRF from whole time series.
-% All 4 basis. Skip pruning step.
-% For experiment 8 and 10. For experiment 12 and afterward, use preprocessFNIRS05_MultiOnly
+% STATUS: active.
+% 
+% SYNTAX:
+% preprocessFNIRS06_CV_GLM_ssBeta(s,numClasses,rejTrOp,rejChnOp,lpFilt)
+% 
+% DESCRIPTION:
+% Convert nirs to snirf file format, preprocess data and fit GLM to 
+% entire dataset. Used for plotAllHRFs.m
+% 
+% RESTRICTION:
+% Only for sbj 08 and 10.
+% 
+% INPUTS:
+% s - struct containing parameters. Ex: variable 's' in
+%   '\RawDatafNIRS\Experiment12\12.mat'.
+% numClasses - int: number of classes for classification.
+%   2 for classification between left and right.
+%   3 for classification between left, right & center.
+% rejTrOp - int: option to reject trials based on whether subject correctly
+%   answer questions and noise level.
+%       0 - don't reject trials
+%       1 - reject trials
+% rejChnOp - int: option to remove channels based on noise level.
+%       0 - don't remove channels
+%       1 - remove channels
+% lpFilt- int: lowpass bandpass frequency for butterworth filter
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) save statistical test results and other variables.
+% 
+% PLOTTING:
+% None.
 
 function preprocessFNIRS06(sbjNum,rawDataFN,movieList,opFTest)
 saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];
@@ -131,8 +162,8 @@ tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
 
 [stim,tRange] = hmrR_StimRejection(dod,stim,tIncAuto,tIncMan,[-2  15]);
 
-dod = hmrR_BandpassFilt(dod,0.01,10);
-%dod = hmrR_BandpassFilt(dod,0.01,0.5);
+%dod = hmrR_BandpassFilt(dod,0.01,10);
+dod = hmrR_BandpassFilt(dod,0.01,0.5);
 %dod = hmrR_BandpassFilt(dod,0,0.5);
 
 dc = hmrR_OD2Conc(dod,probe,[1  1  1]);
@@ -160,7 +191,7 @@ if opFTest == 1
     
     betaF.betaList = betaList;
     dof_reduced = zeros(1,numCond);
-    sse_reduced = zeros(numCond,size(sse_full{1},2),size(sse_full{1},3));
+    sse_reduced = zeros(numCond,size(sse_full,2),size(sse_full,3));
     for i = 1:numCond
         tempCondList = condList;
         tempCondList(i) = 0;
@@ -186,7 +217,7 @@ if opFTest
         'tIncAuto','mlActAuto','tIncAuto','snirf1','allS','bvar','dof_reduced',...
         'sse_reduced');
 else
-    fileName = [processedDataDir filesep 'intermediateOutputsCombined_Basis1_10Hz.mat'];
+    fileName = [processedDataDir filesep 'intermediateOutputsCombined_Basis1.mat'];
     save(fileName,'dc','dcAvg','dcAvgStd','dcNew','beta',...
         'betaSS','hmrstats','dod','stim','tRange','dof_full','sse_full',...
         'tIncAuto','mlActAuto','tIncAuto','snirf1','allS','bvar');

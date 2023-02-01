@@ -1,14 +1,53 @@
-% CV where SS beta coefficients from training fold is passed to test fold
-% 03/24/2022: Remove rejected trials from classification
-%   Remove cueOnsetIndex, ineffective method. Just directly filter allS
-% Only for sbj 12 and after
-%
-% For figure 7 and 8. Different window length and island.
-%
-% LDA Ledoit only
-
+% STATUS: experimental.
+% Not for publication
+% 
+% SYNTAX:
+% preprocessFNIRS06_CV_GLM_ssBeta_PostVsAnt(s,numClasses,rejTrOp,...
+%   rejChnOp,rerunOp,plotOp)
+% 
+% DESCRIPTION:
 % Compare posterior vs anterior FEF
-% Plot coding block not updated. Too lazy.
+%   Preprocess raw data (light intensities) and perform cross Validation 
+%   where SS beta coefficients from training fold is passed to test fold.
+%   Perform classification using 6 different classifiers.
+%   Test different decision windows over the duration of trial, all 1 sec 
+%   long.
+% 
+% RESTRICTION:
+% Only for sbj 08 and 10
+% 
+% INPUTS:
+% s - struct containing parameters. Ex: variable 's' in
+%   '\RawDatafNIRS\Experiment12\12.mat'.
+% numClasses - int: number of classes for classification.
+%   2 for classification between left and right.
+%   3 for classification between left, right & center.
+% rejTrOp - int: option to reject trials based on whether subject correctly
+%   answer questions and noise level.
+%       0 - don't reject trials
+%       1 - reject trials
+% rejChnOp - int: option to remove channels based on noise level.
+%       0 - don't remove channels
+%       1 - remove channels
+% rerunOp - int: option to rerun preprocessing and cross-validation
+%       0 - don't rerun. Instead, load previously saved variables.
+%       1 - rerun.
+% plotOp- int: option to plot results.
+%       0 - don't plot.
+%       1- plot.
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) save accuracies of 6 different classifiers for 3 different
+%   chromophores tested. File name depends on parameters used.
+% 2) save figure of decoding performance as a function of time. File name
+%   depends on parameters used.
+% 
+% PLOTTING:
+% When plotOp = 1, plot and save figure of decoding performance as a
+%   function of time.
 
 function preprocessFNIRS06_CV_GLM_ssBeta_PostVsAnt(s,numClasses,rejTrOp,rejChnOp,rerunOp,plotOp)
 
@@ -111,8 +150,12 @@ if rerunOp
     % significantly better than params in 2nd line.
     [dod] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,4,0.97,5,1);
     %[dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5,0.97,5,1);
-
-    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+    
+    if strcmp(sbjNum,'24')||strcmp(sbjNum,'25')
+        tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5);
+    else
+        tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+    end
     %tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,4);
 
     % Here define stim class solely for trials rejection.
@@ -282,7 +325,9 @@ if rerunOp
                 stimTst(1,3) = centerOnsetMTst;
             end
 
-            [stimTr,~] = hmrR_StimRejection(dod,stimTr,tIncAuto,tIncMan,[-2  15]);
+            if rejTrOp
+                [stimTr,~] = hmrR_StimRejection(dod,stimTr,tIncAuto,tIncMan,[-2  15]);
+            end
 
             dodBPFilt = hmrR_BandpassFilt(dod,0.01,0.5);
 
@@ -299,7 +344,9 @@ if rerunOp
             % format beta var here
             ssBeta = betaSS{1}(end,:,:);
 
-            [stimTst,~] = hmrR_StimRejection(dod,stimTst,tIncAuto,tIncMan,[-2  15]);
+            if rejTrOp
+                [stimTst,~] = hmrR_StimRejection(dod,stimTst,tIncAuto,tIncMan,[-2  15]);
+            end
 
             % actually this is not needed, can use stimTst on dcNewTr.
             dcNewTst = hmrR_ssBeta_CV(data,dc, probe, mlActAuto, tIncAuto, squeeze(ssBeta));

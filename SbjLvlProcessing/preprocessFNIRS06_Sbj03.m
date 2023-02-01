@@ -1,8 +1,39 @@
-% this starts with nirs files so can run again to recreate snirf files.
-% this combine nirs files so we can compute HRF from whole time series.
-% All 4 basis. Skip pruning step.
-% For sbj 03. For sbj 08 and 10, use preprocessFNIRS06.m. For 12 and after,
-% use preprocessFNIRS05_MultiOnly
+% STATUS: experimental and not for publication.
+% 
+% SYNTAX:
+% preprocessFNIRS06_CV_GLM_ssBeta(s,numClasses,rejTrOp,rejChnOp,lpFilt)
+% 
+% DESCRIPTION:
+% Convert nirs to snirf file format, preprocess data and fit GLM to 
+% entire dataset. Used for plotAllHRFs.m
+% 
+% RESTRICTION:
+% Only for sbj 03.
+% 
+% INPUTS:
+% s - struct containing parameters. Ex: variable 's' in
+%   '\RawDatafNIRS\Experiment12\12.mat'.
+% numClasses - int: number of classes for classification.
+%   2 for classification between left and right.
+%   3 for classification between left, right & center.
+% rejTrOp - int: option to reject trials based on whether subject correctly
+%   answer questions and noise level.
+%       0 - don't reject trials
+%       1 - reject trials
+% rejChnOp - int: option to remove channels based on noise level.
+%       0 - don't remove channels
+%       1 - remove channels
+% lpFilt- int: lowpass bandpass frequency for butterworth filter
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) save accuracies of 6 different classifiers for 3 different
+% chromophores tested. File name depend on parameters used.
+% 
+% PLOTTING:
+% None.
 
 function preprocessFNIRS06_Sbj03(sbjNum,rawDataFN,respData)
 saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];

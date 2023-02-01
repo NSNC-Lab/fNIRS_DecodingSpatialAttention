@@ -1,5 +1,45 @@
-% This is relatively fast
-% For figure 5 and 6 in Draft 2.
+% STATUS: active
+% 
+% SYNTAX:
+% grpPlotPerfVsTime(goodSbj,numClasses,saveOp,rejTrOp,itrOp,errBarOp)
+% 
+% DESCRIPTION:
+% Plot decoding performance (accuracies) as a function of time course of a
+%   trial for all 3 chromophores.
+% 
+% RESTRICTION:
+% None.
+% 
+% INPUTS:
+% goodSbj - int: group of subjects. Encoding as follow:
+%       1 - high-performance group
+%       2 - low-performance group
+%       0 - all subjects
+% numClasses - int: number of classes to classify
+%       2 - classify between left & right
+%       3 - classify between left, right & center
+% saveOp - int: option to save
+%       0 - don't save
+%       1- save
+% rejTrOp - int: option to reject trials
+%       0 - don't reject trials
+%       1 - reject trials
+% itrOp - int: option to display information transfer rate (itr)
+%       0 - don't display itr.
+%       1- display itr.
+% errBarOp - int: option to display error bar:
+%       0 - don't display error bars
+%       1 - display error bars as confidence intervals
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) save figure of decoding performance as a function of time course of trial
+% 2) save decoding performances of all subjects in one array variable.
+% 
+% PLOTTING:
+% Line plots of decoding performance as a function of time course of trial
 
 function grpPlotPerfVsTime(goodSbj,numClasses,saveOp,rejTrOp,itrOp,errBarOp)
 
@@ -115,7 +155,8 @@ function grpPlotPerfVsTime(goodSbj,numClasses,saveOp,rejTrOp,itrOp,errBarOp)
                 % preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly
                 %savePerfFN = 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3.mat';
                 %savePerfFN = 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3.mat';
-                savePerfFN = 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3_10Hz.mat';
+                %savePerfFN = 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3_10Hz.mat';
+                savePerfFN = 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_Version02.mat';
             else
                 savePerfFN = 'performanceLinearDiscriminantUpdated_SSBeta_LR.mat';
             end
@@ -398,7 +439,7 @@ function grpPlotPerfVsTime(goodSbj,numClasses,saveOp,rejTrOp,itrOp,errBarOp)
     
     %cmap = jet(numClassifiers);
     cmap = loadDefaultColors(1);
-    yLimAxis = [0.2 0.8];
+    yLimAxis = [0.2 1];
     
     figure('units','normalized','outerposition',[0 0 0.5 0.6]); hold on;
     %figure();

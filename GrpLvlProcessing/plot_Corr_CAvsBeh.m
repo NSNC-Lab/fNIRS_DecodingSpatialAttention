@@ -1,7 +1,28 @@
-% plot correlation between behavioral score and CA performance at 2-3s
-% window
-
-% do the same thing for var of beta coeff.
+% STATUS: active
+% 
+% SYNTAX:
+% plot_Corr_CAvsBeh(numClasses)
+% 
+% DESCRIPTION:
+% Plot correlation between behavioral score and decoding performance at
+%   2-3s window.
+% 
+% RESTRICTION:
+% None.
+% 
+% INPUTS:
+% numClasses - int: number of classes to classify
+%       2 - classify between left & right
+%       3 - classify between left, right & center
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) save figure of fitted linear regression
+% 
+% PLOTTING:
+% Linear regression between decoding performance and behavioral performance
 
 function plot_Corr_CAvsBeh(numClasses)
 

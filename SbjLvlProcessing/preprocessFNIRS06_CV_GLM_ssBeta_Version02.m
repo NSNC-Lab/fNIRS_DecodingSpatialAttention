@@ -1,12 +1,14 @@
-% STATUS: outdated.
-% use preprocessFNIRS06_CV_GLM_ssBeta_Version02 instead
+% STATUS: active.
 % 
 % SYNTAX:
-% preprocessFNIRS06_CV_GLM_ssBeta(s,numClasses,rejTrOp,rejChnOp,lpFilt)
+% preprocessFNIRS06_CV_GLM_ssBeta_Version02(s,numClasses,...
+%   rejTrOp,rejChnOp,lpFilt)
 % 
 % DESCRIPTION:
-% Cross Validation where SS beta coefficients from training fold is passed to test fold
-%   Perform classification using 6 different classifiers.
+% Preprocess raw data (light intensities) and perform cross validation 
+% where SS beta coefficients from training fold is passed to test fold.
+% Perform classification using 6 different classifiers.
+% Test different decision windows over the duration of trial, all 1 sec long.
 % 
 % RESTRICTION:
 % Only for sbj 08 and 10.
@@ -36,7 +38,7 @@
 % PLOTTING:
 % None.
 
-function preprocessFNIRS06_CV_GLM_ssBeta(s,numClasses,rejTrOp,rejChnOp,lpFilt)
+function preprocessFNIRS06_CV_GLM_ssBeta_Version02(s,numClasses,rejTrOp,rejChnOp,lpFilt)
 
 sbjNum = s.name;
 rawDataFN = s.fName;
@@ -144,6 +146,7 @@ dod = hmrR_Intensity2OD(data);
 [dod] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,4,0.97,5,1);
 %[dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5,0.97,5,1);
 
+%tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
 if strcmp(sbjNum,'24')||strcmp(sbjNum,'25')
     tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5);
 else
@@ -322,7 +325,7 @@ for iRep = 1:nReps
 
         %stimTr = snirf1.stim;
 
-        if rejTrOp
+        if rejTrOp == 1
             [stimTr,~] = hmrR_StimRejection(dod,stimTr,tIncAuto,tIncMan,[-2  15]);
         end
 
@@ -345,7 +348,7 @@ for iRep = 1:nReps
         % format beta var here
         ssBeta = betaSS{1}(end,:,:);
 
-        if rejTrOp
+        if rejTrOp == 1
             [stimTst,~] = hmrR_StimRejection(dod,stimTst,tIncAuto,tIncMan,[-2  15]);
         end
 
@@ -422,9 +425,11 @@ if numClasses == 2
     if rejTrOp
         %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc.mat'];
         if lpFilt == 10
-            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc_10Hz.mat'];
+            %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc_10Hz.mat'];
+            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_Version02_10Hz.mat'];
         else
-            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc.mat'];
+            %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc.mat'];
+            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_Version02.mat'];
         end
     else
         fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_SNR_1.5.mat'];

@@ -1,18 +1,33 @@
-% For figure 5 in Draft 3
-% figure 5a: compare HbO, HbR and HbT for grand average
-% figure 5b: compare high-performing and low-performing for HbT
+% STATUS: active
+% 
+% SYNTAX:
+% grpPlotPerfVsTime_Fig5_BarPlot(numClasses,saveOp,ciOp)
+% 
+% DESCRIPTION:
+% Plot barchart of decoding performance.
+% 
+% RESTRICTION:
+% None.
+% 
+% INPUTS:
+% numClasses - int: number of classes to classify
+%       2 - classify between left & right
+%       3 - classify between left, right & center
+% saveOp - int: option to save
+%       0 - don't save
+%       1- save
+% ciOp - int: option to display confidence interval
+%       0 - don't display CIs.
+%       1- display CIs.
 %
-% OLD
-% 6 subplots (2,3). HbO, HbR, HbT. Show grand avg, high and low performing group on
-% same figure, only show LDA classifier. So 3 lines per fig.
-% 2-class classification at top row.
-% 3-class classification at bottom row.
-% In another figure, show two types of high-performing subjects, instant
-% and gradual. (Only show HbT and LDA and 2-class classification).
-% Do not maximize window. Increase font size.
-% 08/01/2022, add CI options
-%   1 for counting each fold as one sample point
-%   2 for counting each sbj as one sample point
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% save figure of decoding performance
+% 
+% PLOTTING:
+% Bar chart of decoding performance
 
 function grpPlotPerfVsTime_Fig5_BarPlot(numClasses,saveOp,ciOp)
     
@@ -121,7 +136,12 @@ function grpPlotPerfVsTime_Fig5_BarPlot(numClasses,saveOp,ciOp)
                 processedDataDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];
                 
                 if numClasses == 2
-                    savePerfFN = 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3.mat';
+                    %savePerfFN = 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3.mat';
+                    % trial rejection version02 'change in trial rejection
+                    % parameter'
+                    savePerfFN = 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_Version02.mat';
+                    % no trial rejection
+                    %savePerfFN = 'performance_GLM_CV_SSBeta_LR_SNR_1.5.mat';
                     %savePerfFN = 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3_10Hz.mat';
                     %savePerfFN = 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3_0p5s.mat';
                 else

@@ -1,7 +1,41 @@
-% this starts with nirs files so can run again to recreate snirf files.
-% this combine nirs files so we can compute HRF from whole time series.
-% All 4 basis. Skip pruning step.
-% For experiment 8 and 10. For experiment 12 and afterward, use preprocessFNIRS05_MultiOnly
+% STATUS: active.
+% 
+% SYNTAX:
+% preprocessFNIRS06_BVar(sbjNum,rawDataFN,movieList)
+% 
+% DESCRIPTION:
+% Perform GLM on entire set. No splitting into training/test set.
+% 
+% RESTRICTION:
+% Only for sbj 08 and 10.
+% 
+% INPUTS:
+% sbjNum - subject ID. 2-digits string. Ex: '08'.
+% rawDataFN - 1xN cell array of nirs data recordings. Use struct s.fName as
+%   input.
+% movieList - file name of mat file containing different variables related
+% to experiment:
+%   fixedMaskerList - cell array: file names of fixed masker movies
+%   indexMoviesTest - numTrials x 5 double array:
+%       col 1: index of target movies in uniqueMovies
+%       col 2: index of spatial location
+%       col 3: boolean: masker is fixed or random
+%       col 4: index of masker movies in fixedMaskerList(?)
+%       col 5: boolean: condition is target-alone or target+maskers
+%   maskerMovies - cell array: file names of random masker movies
+%   numTrials - int: number of trials the subject took
+%   uniqueMovies - cell array: file names of target movies
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) convert nirs to snirf file format with file name ending with
+%   'Combined_Basis1.snirf'
+% 2) save outputs of hmrR_GLM_bvar function in 'intermediateOutputsCombined_Basis1.mat'
+% 
+% PLOTTING:
+% None.
 
 function preprocessFNIRS06_BVar(sbjNum,rawDataFN,movieList)
 saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];
@@ -126,7 +160,11 @@ dod = hmrR_Intensity2OD(data);
 [dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,4,0.97,5,1);
 %[dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5,0.97,5,1);
 
-tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+if strcmp(sbjNum,'24')||strcmp(sbjNum,'25')
+    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5);
+else
+    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+end
 %tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,4);
 
 [stim,tRange] = hmrR_StimRejection(dod,stim,tIncAuto,tIncMan,[-2  15]);

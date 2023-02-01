@@ -7,6 +7,49 @@
 % Used for subset of channels
 % DiffTLen!!!
 
+% STATUS: Active(?)
+% 
+% SYNTAX:
+% [performanceLDALedoit] = ...
+%   calcCumSum_DiffStartT_AllChn_CompClassifiers_NoSave_LOFO(sbjNum,...
+%   trialsTr,trialsTst,movieListTrain,movieListTest,numClasses,idxChn,...
+%   mlActAuto)
+% 
+% DESCRIPTION:
+% Format data and perform cross-validation classification where SS beta 
+%   coefficients from training fold is passed to test fold. Use rLDA 
+%   classifier. Test different decision window lengths.
+% 
+% RESTRICTION:
+% None.
+% 
+% INPUTS:
+% sbjNum - string: subject ID
+% trialsTr - training dataset. 3D double array: channel x time x trial
+% trialsTst - test dataset. 3D double array: channel x time x trial
+% movieListTrain - trials info for training dataset. numTrials x 5 double array:
+%       col 1: index of target movies in uniqueMovies
+%       col 2: index of spatial location
+%       col 3: boolean: masker is fixed or random
+%       col 4: index of masker movies in fixedMaskerList(?)
+%       col 5: boolean: condition is target-alone or target+maskers
+% movieListTest - trials info for test dataset. same structure as movieListTrain
+% numClasses - int: number of classes for classification.
+% idxChn - 1D double array: index of channel in 1st dimension of 
+%   trialsTr/trialsTst to test
+% mlActAuto - 1x1 cell array containing 1D int array of channel list of 2
+%   different wavelengths
+%
+% RETURNED VARIABLES:
+% performanceLDALedoit - decoding performance of rLDA classifier for 
+%   each decision window. 1D double array: 1 x time windows
+% 
+% FILES SAVED:
+% None.
+% 
+% PLOTTING:
+% None.
+
 function [performanceLDALedoitHbO] = ...
     calcCumSum_DiffStartT_AllChn_CompClassifiers_NoSave_Subset(sbjNum,trialsTr,trialsTst,movieListTrain,movieListTest,numClasses,mlActAuto)
 

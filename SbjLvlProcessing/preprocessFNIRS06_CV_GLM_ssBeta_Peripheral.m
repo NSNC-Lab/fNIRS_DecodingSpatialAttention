@@ -1,14 +1,48 @@
-% CV where SS beta coefficients from training fold is passed to test fold
-% 03/24/2022: Remove rejected trials from classification
-%   Remove cueOnsetIndex, ineffective method. Just directly filter allS
-% Only for sbj 12 and after
-%
+% STATUS: experimental.
+% Not for publication
+% 
+% SYNTAX:
+% preprocessFNIRS06_CV_GLM_ssBeta_Peripheral(s,numClasses,...
+%   rejTrOp,rejChnOp,cond)
+% 
+% DESCRIPTION:
 % Compare left vs center, right vs center, center vs peripheral.
 % Only IPS
-
-% cond = 1: Left vs Center
-% cond = 2: Right vs Center
-% cond = 3: Center vs Peripheral. Not implemented yet.
+% Preprocess raw data (light intensities) and perform cross Validation 
+% where SS beta coefficients from training fold is passed to test fold.
+% Perform classification using 6 different classifiers.
+% Test different decision windows over the duration of trial, all 1 sec long.
+% 
+% RESTRICTION:
+% Only for sbj 08 and 10.
+% 
+% INPUTS:
+% s - struct containing parameters. Ex: variable 's' in
+%   '\RawDatafNIRS\Experiment12\12.mat'.
+% numClasses - int: number of classes for classification.
+%   2 for classification between left and right.
+%   3 for classification between left, right & center.
+% rejTrOp - int: option to reject trials based on whether subject correctly
+%   answer questions and noise level.
+%       0 - don't reject trials
+%       1 - reject trials
+% rejChnOp - int: option to remove channels based on noise level.
+%       0 - don't remove channels
+%       1 - remove channels
+% cond - int: 
+%       1: Left vs Center
+%       2: Right vs Center
+%       3: Center vs Peripheral. Not implemented yet.
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) save accuracies of 6 different classifiers for 3 different
+% chromophores tested. File name depend on parameters used.
+% 
+% PLOTTING:
+% None.
 
 function preprocessFNIRS06_CV_GLM_ssBeta_Peripheral(s,numClasses,rejTrOp,rejChnOp,cond)
 
@@ -105,7 +139,11 @@ dod = hmrR_Intensity2OD(data);
 [dod] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,4,0.97,5,1);
 %[dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5,0.97,5,1);
 
-tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+if strcmp(sbjNum,'24')||strcmp(sbjNum,'25')
+    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5);
+else
+    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+end
 %tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,4);
 
 idxIPS = [1:6 8:21 27 28 31 32 35 36 37 38];
@@ -275,7 +313,9 @@ for iRep = 1:nReps
             stimTst(1,3) = centerOnsetMTst;
         end
 
-        [stimTr,~] = hmrR_StimRejection(dod,stimTr,tIncAuto,tIncMan,[-2  15]);
+        if rejTrOp
+            [stimTr,~] = hmrR_StimRejection(dod,stimTr,tIncAuto,tIncMan,[-2  15]);
+        end
 
         dodBPFilt = hmrR_BandpassFilt(dod,0.01,0.5);
         %dodBPFilt = hmrR_BandpassFilt(dod,0.01,10);
@@ -294,7 +334,9 @@ for iRep = 1:nReps
         % format beta var here
         ssBeta = betaSS{1}(end,:,:);
 
-        [stimTst,~] = hmrR_StimRejection(dod,stimTst,tIncAuto,tIncMan,[-2  15]);
+        if rejTrOp
+            [stimTst,~] = hmrR_StimRejection(dod,stimTst,tIncAuto,tIncMan,[-2  15]);
+        end
 
         % actually this is not needed, can use stimTst on dcNewTr.
         dcNewTst = hmrR_ssBeta_CV(data,dc, probe, mlActAuto, tIncAuto, squeeze(ssBeta));

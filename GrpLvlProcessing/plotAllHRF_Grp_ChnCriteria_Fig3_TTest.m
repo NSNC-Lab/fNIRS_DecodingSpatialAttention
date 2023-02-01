@@ -1,8 +1,28 @@
-% Arithmetic average of HRFs
-% Light line color, plot ind HRFs
-% Different processing for sbj 08 and 10 because they use old SD design and
-% has both single and multi conditions
-% new codes, ignore grpPlotHRF
+% STATUS: active
+% 
+% SYNTAX:
+% plotAllHRF_Grp_ChnCriteria_Fig3_TTest(saveOp,opHBCorrected)
+% 
+% DESCRIPTION:
+% Plot HRFs for all 3 chromophores and spatial locations.
+% 
+% RESTRICTION:
+% None.
+% 
+% INPUTS:
+% saveOp - int: option to save figure.
+%       0 - don't save
+%       1 - save
+% opHBCorrected - int: option to use corrected p-value
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% save figure of HRFs.
+% 
+% PLOTTING:
+% Figure of HRFs
 
 function plotAllHRF_Grp_ChnCriteria_Fig3_TTest(saveOp,opHBCorrected)
 
@@ -83,9 +103,9 @@ numBeta = length(betaIdxRng);
 for i = 1:length(sbjList)
     sbjNum = sbjList{i};
     saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];
-    %load([saveDir filesep 'intermediateOutputsCombined_Basis1.mat'],'dcAvg','mlActAuto','beta','bvar');
+    load([saveDir filesep 'intermediateOutputsCombined_Basis1.mat'],'dcAvg','mlActAuto','beta','bvar');
 
-    load([saveDir filesep 'intermediateOutputsCombined_Basis1_10Hz.mat'],'dcAvg','mlActAuto','beta','bvar');
+    %load([saveDir filesep 'intermediateOutputsCombined_Basis1_10Hz.mat'],'dcAvg','mlActAuto','beta','bvar');
     betaVar = beta{1};
     
     hrf_GLM = dcAvg.dataTimeSeries;
@@ -244,8 +264,8 @@ condSubPlotIdx = [1 2 3];
 
 leftChnNum = 1;
 leftStr = 'Left';
-%rightChnNum = 18; % S5D9
-rightChnNum = 17; % S5D8
+rightChnNum = 18; % S5D9
+%rightChnNum = 17; % S5D8
 rightStr = 'Right';
 
 % Left HbO

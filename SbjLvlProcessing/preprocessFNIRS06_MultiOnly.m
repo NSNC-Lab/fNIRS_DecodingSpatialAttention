@@ -1,8 +1,43 @@
-% this starts with nirs files so can run again to recreate snirf files.
-% this combine nirs files so we can compute HRF from whole time series.
-% Skip pruning step
-% Different parameters
-% Used for plotAllHRFs.m
+% STATUS: active.
+% 
+% SYNTAX:
+% preprocessFNIRS06_MultiOnly(sbjNum,rawDataFN,movieList,opFTest)
+% 
+% DESCRIPTION:
+% Convert nirs to snirf file format, preprocess data and fit GLM to 
+% entire dataset. Used for plotAllHRFs.m
+% 
+% RESTRICTION:
+% Only for sbj 12 and afterward.
+% 
+% INPUTS:
+% sbjNum - subject ID. 2-digits string. Ex: '08'.
+% rawDataFN - 1xN cell array of nirs data recordings. Use struct s.fName as
+%   input.
+% movieList - file name of mat file containing different variables related
+% to experiment:
+%   fixedMaskerList - cell array: file names of fixed masker movies
+%   indexMoviesTest - numTrials x 5 double array:
+%       col 1: index of target movies in uniqueMovies
+%       col 2: index of spatial location
+%       col 3: boolean: masker is fixed or random
+%       col 4: index of masker movies in fixedMaskerList(?)
+%       col 5: boolean: condition is target-alone or target+maskers
+%   maskerMovies - cell array: file names of random masker movies
+%   numTrials - int: number of trials the subject took
+%   uniqueMovies - cell array: file names of target movies
+% opFTest - int: whether to use F-Test
+%       0: don't use F-Test
+%       1: use F-Test
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) save statistical test results and other variables.
+% 
+% PLOTTING:
+% None.
 
 function preprocessFNIRS06_MultiOnly(sbjNum,rawDataFN,movieList,opFTest)
 saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];
@@ -127,13 +162,17 @@ dod = hmrR_Intensity2OD(data);
 [dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,4,0.97,5,1);
 %[dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5,0.97,5,1);
 
-tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+if strcmp(sbjNum,'24')||strcmp(sbjNum,'25')
+    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5);
+else
+    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+end
 %tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,4);
 
 [stim,tRange] = hmrR_StimRejection(dod,stim,tIncAuto,tIncMan,[-2  15]);
 
-%dod = hmrR_BandpassFilt(dod,0.01,0.5);
-dod = hmrR_BandpassFilt(dod,0.01,10);
+dod = hmrR_BandpassFilt(dod,0.01,0.5);
+%dod = hmrR_BandpassFilt(dod,0.01,10);
 %dod = hmrR_BandpassFilt(dod,0,0.5);
 
 dc = hmrR_OD2Conc(dod,probe,[1  1  1]);
@@ -192,7 +231,7 @@ if opFTest
         'sse_reduced');
 else
     snirf1.Save([saveDir filesep rawDataFN{1} 'CombinedBasis1.snirf']);
-    fileName = [processedDataDir filesep 'intermediateOutputsCombined_Basis1_10Hz.mat'];
+    fileName = [processedDataDir filesep 'intermediateOutputsCombined_Basis1.mat'];
     save(fileName,'dc','dcAvg','dcAvgStd','dcNew','beta',...
         'betaSS','hmrstats','dod','stim','tRange','dof_full','sse_full',...
         'tIncAuto','mlActAuto','tIncAuto','snirf1','allS','bvar');

@@ -52,6 +52,7 @@ else
 end
 
 allS = allS(cueOnsetIndex);
+allS = allS./50;
 
 if startT ~= 1
     % allS is in sec
@@ -118,7 +119,8 @@ dod = hmrR_Intensity2OD(data);
 [dod] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,4,0.97,5,1);
 %[dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5,0.97,5,1);
 
-tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+%tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,4);
 
 [stimAll,~] = hmrR_StimRejection(dod,stimAll,tIncAuto,tIncMan,[-2  15]);
 
@@ -144,10 +146,8 @@ avgTimeTr = mean(timeTr)/fs;
 % Number of trials rejected
 numRejTr = 0;
 for i = 1:size(stimAll,2)
-    numRejTr = numRejTr + sum(find(stimAll(i).states(:,2)<0));
+    numRejTr = numRejTr + sum(stimAll(i).states(:,2)<0);
 end
-
-%numRejTr = sum(find(stimAll.states(:,2)<0));
 
 behScore = sum((responsesA==correctRespA)&(responsesV==correctRespV))/length(correctRespV);
 

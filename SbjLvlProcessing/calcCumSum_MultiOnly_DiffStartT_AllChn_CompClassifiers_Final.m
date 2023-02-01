@@ -1,3 +1,5 @@
+% Status: Inactive
+% 
 % Only for sbj 12 and after.
 % For sbj 08 and 10, use createSingleTrialHRF_Updated_DiffBasis(sbjNum,respData,numClasses)
 %

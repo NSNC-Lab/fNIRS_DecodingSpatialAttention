@@ -1,10 +1,39 @@
-% split into single and multi groups.
-% new. Use trials from dcNew var
-% option to re-run training and classifying or pull from saved data
-% sbjList is cell array of experiment "number". Ex: sbjList = {'01','02'};
-% sbjList = {'08','10','12','13','14','15'};tInd = 8;featureName = 'Cumulative Sum';numRept = 5;numClasses = 2;saveOp = 0;rerunOp = 1;
-% For Figure Draft 4. Now exclude rejected channel from calculating avg CA
-% performance.
+% STATUS: active
+% 
+% SYNTAX:
+% grpLinePlotROINames_04(sbjGrp,numClasses,rejChnOp,saveOp)
+% 
+% DESCRIPTION:
+% Plot decoding performance (accuracies) of each channel. Displayed as
+%   probe where color mapping is used to represent decoding performance and
+%   lines are ordered as displayed on 2D probe.
+% 
+% RESTRICTION:
+% None.
+% 
+% INPUTS:
+% sbjGrp - int: group of subjects. Encoding as follow:
+%       1 - high-performance group
+%       2 - low-performance group
+%       0 - all subjects
+% numClasses - int: number of classes to classify
+%       2 - classify between left & right
+%       3 - classify between left, right & center
+% rejChnOp - int: option to reject channels
+%       0 - don't reject channels
+%       1 - reject channels
+% saveOp - int: option to save
+%       0 - don't save
+%       1- save
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% save figure of decoding performance of each channel
+% 
+% PLOTTING:
+% Decoding performance of each channel
 
 function grpLinePlotROINames_04(sbjGrp,numClasses,rejChnOp,saveOp)
 

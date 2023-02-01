@@ -1,15 +1,17 @@
-% STATUS: outdated.
-% use preprocessFNIRS06_CV_GLM_ssBeta_Version02 instead
+% STATUS: active.
 % 
 % SYNTAX:
-% preprocessFNIRS06_CV_GLM_ssBeta(s,numClasses,rejTrOp,rejChnOp,lpFilt)
+% preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Version02(s,numClasses,...
+%   rejTrOp,rejChnOp,lpFilt)
 % 
 % DESCRIPTION:
-% Cross Validation where SS beta coefficients from training fold is passed to test fold
-%   Perform classification using 6 different classifiers.
+% Preprocess raw data (light intensities) and perform cross validation 
+% where SS beta coefficients from training fold is passed to test fold.
+% Perform classification using 6 different classifiers.
+% Test different decision windows over the duration of trial, all 1 sec long.
 % 
 % RESTRICTION:
-% Only for sbj 08 and 10.
+% Only for sbj 12 and afterward.
 % 
 % INPUTS:
 % s - struct containing parameters. Ex: variable 's' in
@@ -36,7 +38,7 @@
 % PLOTTING:
 % None.
 
-function preprocessFNIRS06_CV_GLM_ssBeta(s,numClasses,rejTrOp,rejChnOp,lpFilt)
+function preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Version02(s,numClasses,rejTrOp,rejChnOp,lpFilt)
 
 sbjNum = s.name;
 rawDataFN = s.fName;
@@ -50,53 +52,22 @@ processedDataDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionP
 % Convert nirs to snirf file format
 % snirf1 is entire data
 snirf1 = SnirfClass(load([rawDataFN{1} '.nirs'],'-mat'));
-snirf3 = SnirfClass(load([rawDataFN{2} '.nirs'],'-mat'));
-snirf4 = SnirfClass(load([rawDataFN{3} '.nirs'],'-mat'));
 snirf1.Info()
 
 % Extract aux and convert to stimclass
 allS2 = find(snirf1.aux(1,1).dataTimeSeries>1);
 aInd2 = find(allS2(2:end)-allS2(1:end-1)==1);
-allS3 = find(snirf3.aux(1,1).dataTimeSeries>1);
-aInd3 = find(allS3(2:end)-allS3(1:end-1)==1);
-allS4 = find(snirf4.aux(1,1).dataTimeSeries>1);
-aInd4 = find(allS4(2:end)-allS4(1:end-1)==1);
+
 allS2(aInd2) = [];
 allS2 = allS2./50;
-allS3(aInd3) = [];
-allS3 = allS3./50;
-allS4(aInd4) = [];
-allS4 = allS4./50;
-
-% oldStimClass1Length2 = size(allS2,1);
-% oldStimClass1Length3 = oldStimClass1Length2 + size(allS3,1);
-% oldStimClass1Length4 = oldStimClass1Length3 + size(allS4,1);
 
 if strcmp(sbjNum,'08')||strcmp(sbjNum,'10')
     cueOnsetIndex = 1:4:720;
 else
-    cueOnsetIndex = 1:4:1080;
+    cueOnsetIndex = 1:4:360;
 end
-% cueOnsetIndex2 = 1:oldStimClass1Length2;
-% cueOnsetIndex3 = oldStimClass1Length2+1:oldStimClass1Length3;
-% cueOnsetIndex4 = oldStimClass1Length3+1:oldStimClass1Length4;
 
-% trialNum2 = sum(ismember(cueOnsetIndex2,cueOnsetIndex));
-% trialNum3 = sum(ismember(cueOnsetIndex3,cueOnsetIndex));
-% trialNum4 = sum(ismember(cueOnsetIndex4,cueOnsetIndex));
-
-% lastTrial2 = trialNum2;
-% lastTrial3 = lastTrial2 + trialNum3;
-% lastTrial4 = lastTrial3 + trialNum4;
-
-snirf2TLen = size(snirf1.data.time,1)/(50);
-snirf3TLen = size(snirf3.data.time,1)/(50);
-allS3 = allS3+snirf2TLen;
-allS4 = allS4+snirf2TLen+snirf3TLen;
-
-allS = [allS2; allS3; allS4];
-
-allS = allS(cueOnsetIndex);
+allS = allS2(cueOnsetIndex);
 
 if startT ~= 1
     % allS is in sec
@@ -107,14 +78,16 @@ fs = 50;
 %timePt = (0:0.25*fs:5*fs)+2*fs;
 timePt = (0:0.25*fs:7*fs);
 
-% split triggers into 6 categories
 load([saveDir filesep movieList '.mat'],'indexMoviesTest');
 load([saveDir filesep behData '.mat'],'responsesA','responsesV','correctRespA','correctRespV');
 
 indexMoviesTest = updateMovieList(allS,indexMoviesTest);
 
-dAll = DataClass([snirf1.data.dataTimeSeries; snirf3.data.dataTimeSeries; snirf4.data.dataTimeSeries],...
-    0:1/50:(size(snirf1.data.dataTimeSeries,1)+size(snirf3.data.dataTimeSeries,1)+size(snirf4.data.dataTimeSeries,1)-1)/50,snirf1.data.measurementList);
+% dAll = DataClass([snirf1.data.dataTimeSeries; snirf3.data.dataTimeSeries; snirf4.data.dataTimeSeries],...
+%     0:1/50:(size(snirf1.data.dataTimeSeries,1)+size(snirf3.data.dataTimeSeries,1)+size(snirf4.data.dataTimeSeries,1)-1)/50,snirf1.data.measurementList);
+
+dAll = DataClass(snirf1.data.dataTimeSeries,...
+    0:1/50:(size(snirf1.data.dataTimeSeries,1)-1)/50,snirf1.data.measurementList);
 
 if endT ~= -1
     dAll.dataTimeSeries = dAll.dataTimeSeries(startT*fs:endT*fs,:);
@@ -136,7 +109,6 @@ if rejChnOp
 else
     mlActAuto = {ones(size(snirf1.data.measurementList,2),1)};
 end
-
 dod = hmrR_Intensity2OD(data);
 
 % For sbj 12, params in 1st line for motion correct/artifact perform
@@ -144,6 +116,7 @@ dod = hmrR_Intensity2OD(data);
 [dod] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,4,0.97,5,1);
 %[dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5,0.97,5,1);
 
+%tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
 if strcmp(sbjNum,'24')||strcmp(sbjNum,'25')
     tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5);
 else
@@ -151,6 +124,8 @@ else
 end
 %tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,4);
 
+% Here define stim class solely for trials rejection.
+%[stimTr,~] = hmrR_StimRejection(dod,stim,tIncAuto,tIncMan,[-2  15]);
 if rejTrOp == 1
     
     leftOnsetMAll = StimClass('leftMulti');
@@ -183,10 +158,13 @@ else
     
 end
 
-% 90 trials. Multi-movies condition only.
+% 90 trials
 trialIdx = (responsesA==correctRespA)&(responsesV==correctRespV)&(indexMoviesTest(:,5)==1)'&(indexMoviesTest(:,7)>0)';
 if numClasses == 2
     trialIdx = trialIdx & (indexMoviesTest(:,2)==1|indexMoviesTest(:,2)==2)';
+end
+if strcmp(sbjNum,'15')
+    trialIdx(1) = 0;
 end
 numCorrectTrials = sum(trialIdx);
 indexMoviesMultiple = indexMoviesTest(trialIdx,:);
@@ -227,152 +205,93 @@ for iRep = 1:nReps
         foldIdx = (iRep-1)*kFolds+iFold;
         
         % snirf 2. Cell of StimClass array.
-%         leftOnsetSTr = StimClass('leftSingle');
-%         rightOnsetSTr = StimClass('rightSingle');
-%         centerOnsetSTr = StimClass('centerSingle');
         leftOnsetMTr = StimClass('leftMulti');
         rightOnsetMTr = StimClass('rightMulti');
         centerOnsetMTr = StimClass('centerMulti');
 
-%         leftOnsetSTst = StimClass('leftSingle');
-%         rightOnsetSTst = StimClass('rightSingle');
-%         centerOnsetSTst = StimClass('centerSingle');
         leftOnsetMTst = StimClass('leftMulti');
         rightOnsetMTst = StimClass('rightMulti');
         centerOnsetMTst = StimClass('centerMulti');
-
-%         indexMoviesTrainSingle = indexMoviesSingle(cvp.training(iFold),:);
+        
         indexMoviesTrainMultiple = indexMoviesMultiple(cvp.training(iFold),:);
 
-%         cueOnsetIndexSingleTr = cueOnsetIndexSingle(cvp.training(iFold));
-%         cueOnsetIndexMultipleTr = cueOnsetIndexMultiple(cvp.training(iFold));
-
-%         indexMoviesTestSingle = indexMoviesSingle(cvp.test(iFold),:);
         indexMoviesTestMultiple = indexMoviesMultiple(cvp.test(iFold),:);
-%         cueOnsetIndexSingleTst = cueOnsetIndexSingle(cvp.test(iFold));
-%         cueOnsetIndexMultipleTst = cueOnsetIndexMultiple(cvp.test(iFold));
-
+        
         allSMultipleTr = allS(cvp.training(iFold));
         allSMultipleTst = allS(cvp.test(iFold));
 
-        % index of training size (72 trials), boolean for left condition
-%         leftSingleIndexTr = indexMoviesTrainSingle(:,2)==2 & indexMoviesTrainSingle(:,5)==0;
-%         rightSingleIndexTr = indexMoviesTrainSingle(:,2)==1 & indexMoviesTrainSingle(:,5)==0;
-%         centerSingleIndexTr = indexMoviesTrainSingle(:,2)==3 & indexMoviesTrainSingle(:,5)==0;
         leftMultiIndexTr = indexMoviesTrainMultiple(:,2)==2 & indexMoviesTrainMultiple(:,5)==1;
         rightMultiIndexTr = indexMoviesTrainMultiple(:,2)==1 & indexMoviesTrainMultiple(:,5)==1;
         centerMultiIndexTr = indexMoviesTrainMultiple(:,2)==3 & indexMoviesTrainMultiple(:,5)==1;
 
-%         leftSingleIndexTst = indexMoviesTestSingle(:,2)==2 & indexMoviesTestSingle(:,5)==0;
-%         rightSingleIndexTst = indexMoviesTestSingle(:,2)==1 & indexMoviesTestSingle(:,5)==0;
-%         centerSingleIndexTst = indexMoviesTestSingle(:,2)==3 & indexMoviesTestSingle(:,5)==0;
         leftMultiIndexTst = indexMoviesTestMultiple(:,2)==2 & indexMoviesTestMultiple(:,5)==1;
         rightMultiIndexTst = indexMoviesTestMultiple(:,2)==1 & indexMoviesTestMultiple(:,5)==1;
         centerMultiIndexTst = indexMoviesTestMultiple(:,2)==3 & indexMoviesTestMultiple(:,5)==1;
 
-%         AddStims(leftOnsetSTr, allS(cueOnsetIndexSingleTr(leftSingleIndexTr)));
-%         AddStims(rightOnsetSTr, allS(cueOnsetIndexSingleTr(rightSingleIndexTr)));
-%         AddStims(centerOnsetSTr, allS(cueOnsetIndexSingleTr(centerSingleIndexTr)));
+        % Only correct trials
         AddStims(leftOnsetMTr, allSMultipleTr(leftMultiIndexTr));
         AddStims(rightOnsetMTr, allSMultipleTr(rightMultiIndexTr));
         AddStims(centerOnsetMTr, allSMultipleTr(centerMultiIndexTr));
 
-%         AddStims(leftOnsetSTst, allS(cueOnsetIndexSingleTst(leftSingleIndexTst)));
-%         AddStims(rightOnsetSTst, allS(cueOnsetIndexSingleTst(rightSingleIndexTst)));
-%         AddStims(centerOnsetSTst, allS(cueOnsetIndexSingleTst(centerSingleIndexTst)));
         AddStims(leftOnsetMTst, allSMultipleTst(leftMultiIndexTst));
         AddStims(rightOnsetMTst, allSMultipleTst(rightMultiIndexTst));
         AddStims(centerOnsetMTst, allSMultipleTst(centerMultiIndexTst));
 
-%         updateStates(leftOnsetSTr);
-%         updateStates(rightOnsetSTr);
-%         updateStates(centerOnsetSTr);
         updateStates(leftOnsetMTr);
         updateStates(rightOnsetMTr);
         updateStates(centerOnsetMTr);
 
-%         updateStates(leftOnsetSTst);
-%         updateStates(rightOnsetSTst);
-%         updateStates(centerOnsetSTst);
         updateStates(leftOnsetMTst);
         updateStates(rightOnsetMTst);
         updateStates(centerOnsetMTst);
 
         % I prefer this over SetStim so I can control index
-%         stimTr(1,1) = leftOnsetSTr;
-%         stimTr(1,2) = rightOnsetSTr;
-%         stimTr(1,3) = centerOnsetSTr;
         stimTr(1,1) = leftOnsetMTr;
         stimTr(1,2) = rightOnsetMTr;
         if numClasses == 3
             stimTr(1,3) = centerOnsetMTr;
         end
 
-%         stimTst(1,1) = leftOnsetSTst;
-%         stimTst(1,2) = rightOnsetSTst;
-%         stimTst(1,3) = centerOnsetSTst;
         stimTst(1,1) = leftOnsetMTst;
         stimTst(1,2) = rightOnsetMTst;
         if numClasses == 3
             stimTst(1,3) = centerOnsetMTst;
         end
 
-        %obj = SnirfClass(data, stim, probe, aux);
-        %snirfTr = SnirfClass(dAll,stimTr,snirf1.probe,snirf1.aux);
-
-        %stimTr = snirf1.stim;
-
-        if rejTrOp
+        if rejTrOp == 1
             [stimTr,~] = hmrR_StimRejection(dod,stimTr,tIncAuto,tIncMan,[-2  15]);
         end
 
         %dodBPFilt = hmrR_BandpassFilt(dod,0.01,0.5);
         %dodBPFilt = hmrR_BandpassFilt(dod,0.01,10);
         dodBPFilt = hmrR_BandpassFilt(dod,0.01,lpFilt);
-        %dod = hmrR_BandpassFilt(dod,0,0.5);
 
         dc = hmrR_OD2Conc(dodBPFilt,probe,[1  1  1]);
 
         % GLM here
-%         [~,~,~,dcNewTr,~,~,~,~,~,~,beta] = hmrR_GLM_ssBeta(dc,stimTr,probe,mlActAuto,Aaux,tIncAuto,rcMap,...
-%             [-2  15],1,1,[1.0 1.0 0.0 0.0 0.0 0.0],15,1,0,0);
-        
+        % hmrR_GLM_ssBeta
 %         [~,~,~,dcNewTr,~,~,~,~,~,~,betaSS] = hmrR_GLM_HbT(dc,stimTr,probe,mlActAuto,Aaux,tIncAuto,rcMap,...
 %             [-2  15],1,1,[1.0 1.0 0.0 0.0 0.0 0.0],15,1,0,0);
+
         [~,~,~,dcNewTr,~,~,~,~,~,~,betaSS] = hmrR_GLM_MN(dc,stimTr,probe,mlActAuto,Aaux,tIncAuto,rcMap,...
             [-2  15],1,1,[1.0 1.0 0.0 0.0 0.0 0.0],15,1,0,0);
 
         % format beta var here
         ssBeta = betaSS{1}(end,:,:);
 
-        if rejTrOp
+        if rejTrOp == 1
             [stimTst,~] = hmrR_StimRejection(dod,stimTst,tIncAuto,tIncMan,[-2  15]);
         end
-
-        % technically, don't need this. Can just use dcNewTr
+        
+        % actually this is not needed, can use stimTst on dcNewTr.
         dcNewTst = hmrR_ssBeta_CV(data,dc, probe, mlActAuto, tIncAuto, squeeze(ssBeta));
 
-        % [dcAvg,dcAvgStd,nTrials,dcNew,dcResid,dcSum2,beta,R,hmrstats,bvar,ssBeta] = hmrR_ssBeta_CV(dc,stim,probe,mlActAuto,Aaux,tIncAuto,rcMap,...
-        %     [-2  15],1,1,[1.0 1.0 0.0 0.0 0.0 0.0],15,1,0,0);
-
-        % extract and format training and test trials
-%         if numClasses == 2
-%             idxS = indexMoviesTrainSingle(:,2)==2 | indexMoviesTrainSingle(:,2)==1;
-%             idxM = indexMoviesTrainMultiple(:,2)==2 | indexMoviesTrainMultiple(:,2)==1;
-%             allSSingleTr = allS(cueOnsetIndexSingleTr(idxS));
-%             allSMultipleTr = allS(cueOnsetIndexMultipleTr(idxM));
-%             
-%             idxS = indexMoviesTestSingle(:,2)==2 | indexMoviesTestSingle(:,2)==1;
-%             idxM = indexMoviesTestMultiple(:,2)==2 | indexMoviesTestMultiple(:,2)==1;
-%             allSSingleTst = allS(cueOnsetIndexSingleTst(idxS));
-%             allSMultipleTst = allS(cueOnsetIndexMultipleTst(idxM));
-%         else
-%             allSSingleTr = allS(cueOnsetIndexSingleTr);
-%             allSMultipleTr = allS(cueOnsetIndexMultipleTr);
-%             allSSingleTst = allS(cueOnsetIndexSingleTst);
-%             allSMultipleTst = allS(cueOnsetIndexMultipleTst);
-%         end
-
+%         allSMultipleTr = indexMoviesTrainMultiple(:,6);
+%         allSMultipleTst = indexMoviesTestMultiple(:,6);
+        
+        
+        % reject trial, stimTr into allSMultipleTr and
+        
 %         if rejTrOp == 1
 %         
 %             [allSMultipleTr,indexMoviesTrainMultiple] = ...
@@ -409,7 +328,8 @@ for iRep = 1:nReps
             indexMoviesTrainMultiple,indexMoviesTestMultiple,numClasses,mlActAuto);
 
     end
-     
+    
+    
 end
 
 % save folds to file
@@ -420,12 +340,17 @@ end
 
 if numClasses == 2
     if rejTrOp
-        %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc.mat'];
+        %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3.mat'];
+        %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3_0p5s.mat'];
+        
         if lpFilt == 10
-            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc_10Hz.mat'];
+            %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3_10Hz.mat'];
+            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_Version02_10Hz.mat'];
         else
-            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc.mat'];
+            %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3.mat'];
+            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_Version02.mat'];
         end
+        %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_NewHomer3.mat'];
     else
         fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_SNR_1.5.mat'];
     end

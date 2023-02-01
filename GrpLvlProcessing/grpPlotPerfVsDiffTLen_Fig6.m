@@ -8,6 +8,49 @@
 %   1 for counting each fold as one sample point
 %   2 for counting each sbj as one sample point
 
+% STATUS: active
+% 
+% SYNTAX:
+% grpPlotPerfVsDiffTLen_Fig6(goodSbj,numClasses,saveOp,itrOp,ciOp)
+% 
+% DESCRIPTION:
+% Plot decoding performance (accuracies) as a function of decision window
+%   length.
+% 
+% RESTRICTION:
+% None.
+% 
+% INPUTS:
+% goodSbj - int: group of subjects. Encoding as follow:
+%       1 - high-performance group
+%       2 - low-performance group
+%       0 - all subjects
+% numClasses - int: number of classes to classify
+%       2 - classify between left & right
+%       3 - classify between left, right & center
+% saveOp - int: option to save
+%       0 - don't save
+%       1- save
+% itrOp - int: option to display information transfer rate (itr)
+%       0 - don't display itr.
+%       1- display itr.
+% ciOp - int: option to display error bar as confidence intervals:
+%       0 - don't display error bars as confidence intervals
+%       1 - display error bars as confidence intervals: counting each fold 
+%           as one sample point
+%       2 - display error bars as confidence intervals: counting each sbj
+%           as one sample point
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) save figure of decoding performance as a function of time course of trial
+% 2) save decoding performances of all subjects in one array variable.
+% 
+% PLOTTING:
+% Line plots of decoding performance as a function of time course of trial
+
 function grpPlotPerfVsDiffTLen_Fig6(goodSbj,numClasses,saveOp,itrOp,ciOp)
 
     if goodSbj == 1
@@ -266,11 +309,15 @@ function grpPlotPerfVsDiffTLen_Fig6(goodSbj,numClasses,saveOp,itrOp,ciOp)
     [h,p,ci,stats] = ttest(sbjListPerfHbT(1,:,4),0.5);
     disp(p);
     disp(stats);
+    %xSig = tinv(0.95,stats.df)*std(sbjListPerfHbT(1,:,4))/size(sbjListPerfHbT,2) + squeeze(mean(sbjListPerfHbT(1,:,4),2));
+    xSig = tinv(0.975,stats.df)*stats.sd/sqrt(size(sbjListPerfHbT,2)) + 0.5;
+    disp(xSig);
     
     figure();hold on;
     subsetIdx = [2 3 6 7];
     %for i = 1:numSubsets-2
     %for i = 1:numSubsets-4
+    
     errorbar(squeeze(timeLen./fs),squeeze(grpPerfHbT(1,1,:)),abs(squeeze(grpPerfCIHbT(1,1,:))),abs(squeeze(grpPerfCIHbT(2,1,:))),...
         'Color',cmapROI(1,:),'LineStyle',lineStyleROI{1});
     for i = 1:length(subsetIdx)
@@ -278,6 +325,8 @@ function grpPlotPerfVsDiffTLen_Fig6(goodSbj,numClasses,saveOp,itrOp,ciOp)
             'Color',cmapROI(subsetIdx(i),:),'LineStyle',lineStyleROI{subsetIdx(i)});
     end
 
+    yline(xSig,'Color',[243 21 185]./255,'LineStyle',':','LineWidth',1.8);
+    
     if itrOp
         yyaxis left;
         ylim([0 1]);

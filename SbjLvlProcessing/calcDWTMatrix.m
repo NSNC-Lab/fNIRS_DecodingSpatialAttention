@@ -12,13 +12,14 @@ function WX = calcDWTMatrix(X)
     dwtmode('sym');
     
     % M is support length of the (finest-level?) wavelet function
-
+   
     wname = 'bior3.9';
     fb = dwtfilterbank('Wavelet',wname);
     spsi = waveletsupport(fb);
     % I still don't understand why the coarsest level is 20, not 4.
     %M = spsi(1);
     % Here it is 20, but in Jung's code, it's 9???
+    % Different wavelet!!!
     M = spsi(2);
     % [psi, t] = wavelets(fb);
     % [phi, t2] = scalingfunctions(fb);

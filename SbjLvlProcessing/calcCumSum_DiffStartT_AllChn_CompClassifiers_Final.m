@@ -1,8 +1,50 @@
-% Add repts and CI. Used for publication
-%
+% STATUS: Inctive
+% 
+% SYNTAX:
+% calcCumSum_DiffStartT_AllChn_CompClassifiers_Final(sbjNum,numClasses,
+%   saveOp)
+% 
+% DESCRIPTION:
+% Perform cross validation where SS beta coefficients from training fold 
+%   is passed to test fold. Perform all-channel classification using 6 
+%   different classifiers:
+%       1) linear discriminant analysis using linear estimator of
+%       covariance matrix.
+%       2) linear discriminant analysis using non-linear estimator of
+%       covariance matrix.
+%       3) KNN using 1 minus cosine similarity as distance metric
+%       4) SVM using cubic polynomial kernel
+%       5) random forest ensemble
+%       6) boosting ensemble
+% 
+% RESTRICTION:
 % For sbj 08 and 10.
+% 
+% INPUTS:
+% sbjNum - string: subject ID
+% trialsTr - training dataset. 3D double array: channel x time x trial
+% trialsTst - test dataset. 3D double array: channel x time x trial
+% movieListTrain - trials info for training dataset. numTrials x 5 double array:
+%       col 1: index of target movies in uniqueMovies
+%       col 2: index of spatial location
+%       col 3: boolean: masker is fixed or random
+%       col 4: index of masker movies in fixedMaskerList(?)
+%       col 5: boolean: condition is target-alone or target+maskers
+% movieListTest - trials info for test dataset. same structure as movieListTrain
+% numClasses - int: number of classes for classification.
+% mlActAuto - 1x1 cell array containing 1D int array of channel list of 2
+%   different wavelengths
 %
-% All-channel classification
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) Save decoding performances in mat file.
+% 2) If saveOp = 1, save figure of decoding performance as a function of
+%   time course of trial.
+% 
+% PLOTTING:
+% Plot decoding performance as a function of time course of trial.
 
 function calcCumSum_DiffStartT_AllChn_CompClassifiers_Final(sbjNum,numClasses,saveOp)
 processedDataDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];

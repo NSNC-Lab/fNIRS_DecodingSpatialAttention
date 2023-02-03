@@ -38,8 +38,8 @@
 # Parallel Computing Instructions (for CPU)
 
 **List of directories for binaural lab:**
-* /usr3/graduate/mhn (smaller storage quota, for small personal project).
-* /projectnb/binaural/mhn (larger storage quota, shared among lab directory, for bigger project. where I run parallel computing).
+* /usr3/graduate/(your username) (smaller storage quota, for small personal project).
+* /projectnb/binaural/(your username) (larger storage quota, shared among lab directory, for bigger project. where I run parallel computing).
 
 Before running batch file, run below command:
 
@@ -61,7 +61,7 @@ Helpful tips:
 
 To view current status of job:
 
-```qstat -u mhn```
+```qstat -u (your username)```
 
 To view outputs:
 view runfNIRSBash.sh.o(job_number)
@@ -81,10 +81,13 @@ to go to edit mode: type "i"
 
 To run MATLAB without desktop:
 
-```module load matlab
-matlab -nodisplay```
+```
+module load matlab
+matlab -nodisplay
+```
 
 To view/manage storage quota:
+
 scc-ondemand.bu.edu
 
 To debug MATLAB without desktop but from command line:

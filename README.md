@@ -25,7 +25,7 @@
 
 **Running Instructions**:
 * To run everything in one click, run the runAllPreprocessing.m script within the SbjLvlProcessing folder.
-    * **WARNING**: it'll take 1-3 days depending on your computer. Parallel computing version is available at [Parallel Computing Version](#parallel-computing-instructions)
+    * **WARNING**: it'll take 1-3 days depending on your computer. Parallel computing version is available at [Parallel CPU Version](#parallel-computing-instructions)
 
 * To run preprocessing pipeline for Figure 5 and 6, in the SbjLvlProcessing folder, run the runPreprocessing_Main_2Class.m script for 2-class classification and similarly, runPreprocessing_Main_3Class.m script for the 3-class classification.
     * Estimated running time: up to 8-20 hours.
@@ -35,7 +35,7 @@
 
 * To generate Figure 3-8, in the SbjLvlProcessing folder, run the genFigures.m script.
 
-# Parallel Computing Instructions
+# Parallel Computing Instructions (for CPU)
 
 **List of directories for binaural lab:**
 * /usr3/graduate/mhn (smaller storage quota, for small personal project).

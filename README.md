@@ -37,27 +37,31 @@
 
 # Parallel Computing Instructions
 
-List of directories:
-/usr3/graduate/mhn (smaller storage quota, for small personal project).
-/projectnb/binaural/mhn (larger storage quota, shared among lab directory, for bigger project. where I run parallel computing).
+**List of directories for binaural lab:**
+* /usr3/graduate/mhn (smaller storage quota, for small personal project).
+* /projectnb/binaural/mhn (larger storage quota, shared among lab directory, for bigger project. where I run parallel computing).
 
 Before running batch file, run below command:
-dos2unix *.sh *.m
+
+```dos2unix *.sh *.m```
 
 Then check status of file using below command:
-file runBatchfNIRSJob.m
+
+```file runBatchfNIRSJob.m```
 
 Should be ASCII text executable
 
 Finally run the following command:
-qsub -pe omp 8 -l h_rt=28:00:00 ./runfNIRSBash.sh
+
+```qsub -pe omp 8 -l h_rt=28:00:00 ./runfNIRSBash.sh```
 
 You can vary the parameter values if you know what you're doing.
 
 Helpful tips:
 
 To view current status of job:
-qstat -u mhn
+
+```qstat -u mhn```
 
 To view outputs:
 view runfNIRSBash.sh.o(job_number)
@@ -76,8 +80,12 @@ to quit without saving: ":q" or ":q!"
 to go to edit mode: type "i"
 
 To run MATLAB without desktop:
-module load matlab
-matlab -nodisplay
+
+```module load matlab
+matlab -nodisplay```
+
+To view/manage storage quota:
+scc-ondemand.bu.edu
 
 To debug MATLAB without desktop but from command line:
 https://www.mathworks.com/help/releases/R2019b/matlab/debugging-code.html

@@ -25,7 +25,7 @@
 
 **Running Instructions**:
 * To run everything in one click, run the runAllPreprocessing.m script within the SbjLvlProcessing folder.
-    * **WARNING**: it'll take 1-3 days depending on your computer. Parallel computing version is available.
+    * **WARNING**: it'll take 1-3 days depending on your computer. Parallel computing version is available at [Parallel Computing Version](#parallel-computing-instructions)
 
 * To run preprocessing pipeline for Figure 5 and 6, in the SbjLvlProcessing folder, run the runPreprocessing_Main_2Class.m script for 2-class classification and similarly, runPreprocessing_Main_3Class.m script for the 3-class classification.
     * Estimated running time: up to 8-20 hours.
@@ -34,3 +34,67 @@
     * Estimated running time: 1-4 hours.
 
 * To generate Figure 3-8, in the SbjLvlProcessing folder, run the genFigures.m script.
+
+# Parallel Computing Instructions
+
+List of directories:
+/usr3/graduate/mhn (smaller storage quota, for small personal project).
+/projectnb/binaural/mhn (larger storage quota, shared among lab directory, for bigger project. where I run parallel computing).
+
+Before running batch file, run below command:
+dos2unix *.sh *.m
+
+Then check status of file using below command:
+file runBatchfNIRSJob.m
+
+Should be ASCII text executable
+
+Finally run the following command:
+qsub -pe omp 8 -l h_rt=28:00:00 ./runfNIRSBash.sh
+
+You can vary the parameter values if you know what you're doing.
+
+Helpful tips:
+
+To view current status of job:
+qstat -u mhn
+
+To view outputs:
+view runfNIRSBash.sh.o(job_number)
+view runfNIRSBash.sh.po(job_number)
+
+To view error messages:
+runfNIRSBash.sh.e(job_number)
+view runfNIRSBash.sh.pe(job_number)
+
+vim tip/commands:
+go to top of file: ESC + gg
+go to bottom of file: SHIFT + g
+go to line: in view mode, enter number
+to save and quit: ":wq"
+to quit without saving: ":q" or ":q!"
+to go to edit mode: type "i"
+
+To run MATLAB without desktop:
+module load matlab
+matlab -nodisplay
+
+To debug MATLAB without desktop but from command line:
+https://www.mathworks.com/help/releases/R2019b/matlab/debugging-code.html
+
+Advanced options for sun grid engine:
+To view a list of parallel computing environments and their configurations, type qmon, then when main GUI window pops up,
+click Parallel Environment Configuration.
+
+For description of different parallel environments on BU SCC, refer to [4]
+
+To run multicores, use -pe option in qsub command.
+To submit array of jobs, use -t option in qsub command.
+
+For full list of options for SGE, refer to [3].
+
+References & Additional Readings:
+[1] https://docs.oracle.com/cd/E19957-01/820-0698/6ncdvjcmd/index.html
+[2] https://www.bu.edu/tech/support/research/software-and-programming/common-languages/matlab/matlab-batch/
+[3] https://gridscheduler.sourceforge.net/htmlman/htmlman1/qsub.html
+[4] https://www.bu.edu/tech/support/research/system-usage/running-jobs/parallel-batch/#pe

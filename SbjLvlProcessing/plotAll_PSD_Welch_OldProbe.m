@@ -1,4 +1,28 @@
-% For sbj 08 and 10
+% STATUS: analysis. For internal report.
+% 
+% SYNTAX:
+% plotAll_PSD_Welch_OldProbe(sbjNum)
+% 
+% DESCRIPTION:
+% plot estimate of power-spectral density for each channel. If axes are
+%   highlighted in red, it means this channel is rejected (didn't meet the
+%   SNR threshold).
+% 
+% RESTRICTION:
+% Only for sbj 08 and 10.
+% 
+% INPUTS:
+% sbjNum - string: subject ID. ex: '08'
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) figure of PSD for each channel.
+% 
+% PLOTTING:
+% Figure of PSD for each channel.
+
 function plotAll_PSD_Welch_OldProbe(sbjNum)
 
 figSaveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum) '\Figures\HRFs'];

@@ -1,3 +1,5 @@
+% Inactive.
+
 % plot HRF for each condition using output from Homer3 GUI
 
 snirf1 = SnirfLoad('20210504_1348_02.snirf');

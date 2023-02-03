@@ -1,3 +1,5 @@
+% Inactive.
+
 % Plot HRF using outputs from scripting
 % plotHRF.m plot HRF using outputs from group.mat from Homer3 GUI
 % Completed

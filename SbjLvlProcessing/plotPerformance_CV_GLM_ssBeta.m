@@ -1,3 +1,5 @@
+% STATUS: active. For internal report.
+
 function plotPerformance_CV_GLM_ssBeta(sbjNum,numClasses,saveOp,rejTrOp)
 
 processedDataDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];

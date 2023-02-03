@@ -1,5 +1,51 @@
+% STATUS: analysis. For internal report.
+% 
+% SYNTAX:
+% plotAllHRF_Special(sbjNum,opCI,opTTest,opSave)
+% 
+% DESCRIPTION:
+% Plot hemodynamic response functions for each condition and choromophore
+%   for all channels.
+%   Figure legend:
+%       1) If line is bold, then that condition is statistically
+%       significant with the null hypothesis = 0.
+%       2) If the title has *, then the difference between left and right is
+%       statistically significant.
+%       3) If the title has +, then the difference between left and center
+%       is statistically significant.
+%       4) If the title has x, then the difference between right and center
+%       is statistically significant.
+%       5) shaded region represents 95% confidence interval (on student t's
+%       distribution).
+% 
+% RESTRICTION:
 % For sbj 08 and 10
-function plotAllHRF_Special(sbjNum,opCI,opTTest)
+% 
+% INPUTS:
+% sbjNum - string: subject ID. ex: '08'
+% opCI - int: option to display CI
+%       0 - don't display CI
+%       1 - display CI
+% opTTest - int: specify statistical test
+%       0 - use F-test
+%       1 - use t-test
+% saveOp - int: option to save results
+%       0 - don't save results
+%       1 - save results
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% PREREQUISITES:
+% Run preprocessFNIRS06_MultiOnly.m first
+% 
+% FILES SAVED:
+% 1) save figure. File name depends on parameters.
+% 
+% PLOTTING:
+% Plot figure of HRFs for each condition/chromophore.
+
+function plotAllHRF_Special(sbjNum,opCI,opTTest,opSave)
 
 figSaveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum) '\Figures\HRFs'];
 saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];
@@ -355,8 +401,15 @@ legend('Left Multiple','Center Multiple','Right Multiple');
 
 sgtitle(sprintf('Sbj %s HbO',sbjNum));
 hold off;
-fn = sprintf('HbO_AllHRF');
-print(gcf,[figSaveDir filesep fn],'-dpng','-r250');
+
+if ~exist(figSaveDir,'dir')
+    mkdir(figSaveDir);
+end
+
+if opSave
+    fn = sprintf('HbO_AllHRF');
+    print(gcf,[figSaveDir filesep fn],'-dpng','-r250');
+end
 
 chnNum = 0;
 
@@ -477,8 +530,15 @@ legend('Left Multiple','Center Multiple','Right Multiple');
 
 %sgtitle(sprintf('Sbj %s HbO',sbjNum));
 hold off;
-fn = sprintf('HbR_AllHRF');
-print(gcf,[figSaveDir filesep fn],'-dpng','-r250');
+
+if ~exist(figSaveDir,'dir')
+    mkdir(figSaveDir);
+end
+
+if opSave
+    fn = sprintf('HbR_AllHRF');
+    print(gcf,[figSaveDir filesep fn],'-dpng','-r250');
+end
 
 % HbT
 chnNum = 0;
@@ -598,8 +658,15 @@ title(sprintf('Sbj %s HbT',sbjNum));
 
 %sgtitle(sprintf('Sbj %s HbO',sbjNum));
 hold off;
-fn = sprintf('HbT_AllHRF');
-print(gcf,[figSaveDir filesep fn],'-dpng','-r250');
+
+if ~exist(figSaveDir,'dir')
+    mkdir(figSaveDir);
+end
+
+if opSave
+    fn = sprintf('HbT_AllHRF');
+    print(gcf,[figSaveDir filesep fn],'-dpng','-r250');
+end
 
 
 end

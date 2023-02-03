@@ -1,6 +1,36 @@
-% calculate R correlation coefficient with GLM fit HRF, and avg R, number
-% of channels rejected, behavioral score, p and t-value score for all pairs
-% For fNIRS
+% STATUS: active. For internal report.
+% 
+% SYNTAX:
+% calcSummaryStat(sbjNum,snrThresh)
+% 
+% DESCRIPTION:
+% calculate some summary statistics for subject.
+% 
+% RESTRICTION:
+% Only for sbj 12 and afterward.
+% 
+% INPUTS:
+% sbjNum - string: subject ID. ex: '08'
+% snrThresh - double: SNR threshold. This is a hyperparameter and will 
+%   determine the number of channels rejected. For final manuscript, we 
+%   use the following value: 1.5
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) save different summary stats in .mat file.
+%   mlActAuto - cell array of light intensity channels
+%   behScore - double: task performance
+%   numUnusedChns - double: number of rejected channels due to snrThresh
+%   rejChns - cell array of channels rejected
+%   avgTimeTr - double: average time it takes for a subject to complete one
+%       trial
+%   numRejTr - int: number of rejected Trials
+% 
+% PLOTTING:
+% None.
+
 function calcSummaryStat(sbjNum,snrThresh)
 rawDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];
 procDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];

@@ -1,3 +1,5 @@
+% STAUTS: Inactive
+
 % split into single and multi groups.
 % new. Use trials from dcNew var
 

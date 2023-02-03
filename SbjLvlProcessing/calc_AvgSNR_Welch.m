@@ -1,3 +1,35 @@
+% STATUS: analysis. For internal report.
+% 
+% SYNTAX:
+% [snr,snr_Mean,snr_Std,cardiacSize,cardiac_Mean,cardiac_Std] = ...
+%   calc_AvgSNR_Welch(sbjNum)
+% 
+% DESCRIPTION:
+% calculate different estimates of SNR and some other stats related to
+%   noise analysis.
+% 
+% RESTRICTION:
+% Only for sbj 12 and afterward.
+% 
+% INPUTS:
+% sbjNum - string: subject ID. ex: '08'
+%
+% RETURNED VARIABLES:
+% snr - double array: ratio of mean to variance of entire signal for each
+%   channel.
+% snr_Mean - double: average SNR of all channels
+% snr_Std - double: standard deviation of SNR of all channels.
+% cardiacSize - double array: ratio of mean to variance of cardiac signal
+%   for each channel.
+% cardiac_Mean double: average cardiac SNR of all channels.
+% cardiac_Std: standard deviation of SNR of all channels
+% 
+% FILES SAVED:
+% None.
+% 
+% PLOTTING:
+% None.
+
 function [snr,snr_Mean,snr_Std,cardiacSize,cardiac_Mean,cardiac_Std] = calc_AvgSNR_Welch(sbjNum)
 
 figSaveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum) '\Figures\HRFs'];

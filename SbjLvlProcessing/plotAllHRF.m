@@ -1,10 +1,49 @@
-% For sbj 12 and afterward
+% STATUS: analysis. For internal report.
+% 
+% SYNTAX:
+% plotAllHRF(sbjNum,opCI,opTTest,opSave)
+% 
+% DESCRIPTION:
+% Plot hemodynamic response functions for each condition and choromophore
+%   for all channels.
+%   Figure legend:
+%       1) If line is bold, then that condition is statistically
+%       significant with the null hypothesis = 0.
+%       2) If the title has *, then the difference between left and right is
+%       statistically significant.
+%       3) If the title has +, then the difference between left and center
+%       is statistically significant.
+%       4) If the title has x, then the difference between right and center
+%       is statistically significant.
+%       5) shaded region represents 95% confidence interval (on student t's
+%       distribution).
+% 
+% RESTRICTION:
+% Only for sbj 12 and afterward
+% 
+% INPUTS:
+% sbjNum - string: subject ID. ex: '08'
+% opCI - int: option to display CI
+%       0 - don't display CI
+%       1 - display CI
+% opTTest - int: specify statistical test
+%       0 - use F-test
+%       1 - use t-test
+% saveOp - int: option to save results
+%       0 - don't save results
+%       1 - save results
 %
-% Use preprocessFNIRS06_MultiOnly.m results, which use GLM regression on entire
-% dataset (no cross-validation, no channel or trials rejection). Update preprocessFNIRS06.m and 
-% preprocessFNIRS06_MultiOnly.m to reject channels and trials.
-%
-% set opTTest == 1 for T-test, or opTTest == 0 for F-test
+% RETURNED VARIABLES:
+% None.
+% 
+% PREREQUISITES:
+% Run preprocessFNIRS06_MultiOnly.m first
+% 
+% FILES SAVED:
+% 1) save figure. File name depends on parameters.
+% 
+% PLOTTING:
+% Plot figure of HRFs for each condition/chromophore.
 
 function plotAllHRF(sbjNum,opCI,opTTest,opSave)
 
@@ -324,7 +363,8 @@ if ~exist(figSaveDir,'dir')
 end
 
 if opSave
-    fn = sprintf('HbO_AllHRF_10Hz');
+    %fn = sprintf('HbO_AllHRF_10Hz');
+    fn = sprintf('HbO_AllHRF');
     print(gcf,[figSaveDir filesep fn],'-dpng','-r250');
 end
 

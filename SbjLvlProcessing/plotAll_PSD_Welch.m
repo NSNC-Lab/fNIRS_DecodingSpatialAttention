@@ -1,4 +1,28 @@
-% For sbj 12 and afterward
+% STATUS: analysis. For internal report.
+% 
+% SYNTAX:
+% plotAll_PSD_Welch(sbjNum)
+% 
+% DESCRIPTION:
+% plot estimate of power-spectral density for each channel. If axes are
+%   highlighted in red, it means this channel is rejected (didn't meet the
+%   SNR threshold).
+% 
+% RESTRICTION:
+% Only for sbj 12 and afterward.
+% 
+% INPUTS:
+% sbjNum - string: subject ID. ex: '08'
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) figure of PSD for each channel.
+% 
+% PLOTTING:
+% Figure of PSD for each channel.
+
 function plotAll_PSD_Welch(sbjNum)
 
 figSaveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum) '\Figures\HRFs'];
@@ -33,9 +57,11 @@ timeIdx = find(timePt==(5*fs+2*fs));
 
 % number of channels, can pull
 if strcmp(sbjNum,'07')||strcmp(sbjNum,'08') ||strcmp(sbjNum,'10')
-    mlActAuto_Unused = getPrunedChns_Special(sbjNum,s.fName,s.movieList,2);
+    %mlActAuto_Unused = getPrunedChns_Special(sbjNum,s.fName,s.movieList,2);
+    mlActAuto_Unused = getPrunedChns_Special(s,1.5);
 else
-    mlActAuto_Unused = getPrunedChns(sbjNum,s.fName,s.movieList,2);
+    %mlActAuto_Unused = getPrunedChns(sbjNum,s.fName,s.movieList,2);
+    mlActAuto_Unused = getPrunedChns(s,1.5);
 end
 
 ml690 = mlActAuto_Unused{1}(1:length(mlActAuto_Unused{1})/2);

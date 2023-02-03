@@ -22,3 +22,15 @@
 **Dataset**: [Google Drive](https://drive.google.com/drive/folders/1MWttV66DmfCk02pftK2U-wSJxp2okwvN?usp=sharing)
 
 **Abstract**: When analyzing complex scenes, humans often focus their attention on an object at a particular spatial location. The ability to decode the attended spatial location would facilitate brain computer interfaces for complex scene analysis. Here, we investigated functional near-infrared spectroscopy’s (fNIRS) capability to decode audio-visual spatial attention in the presence of competing stimuli from multiple locations.  We targeted dorsal frontoparietal network including frontal eye field (FEF) and intra-parietal sulcus (IPS) as well as superior temporal gyrus/planum temporal (STG/PT). They all were shown in previous fMRI studies to be activated by auditory, visual, or audio-visual spatial tasks. We found that fNIRS provides robust decoding of attended spatial locations for most participants and correlates with behavioral performance. Moreover, we found that FEF makes a large contribution to decoding performance. Surprisingly, performance was significantly above chance level ~1s, well before the peak of the fNIRS response. Our results demonstrate that fNIRS is a promising platform for a compact, wearable technology that could be applied to decode attended spatial location and reveal contributions of specific brain regions during complex scene analysis.
+
+**Running Instructions**:
+* To run everything in one click, run the runAllPreprocessing.m script within the SbjLvlProcessing folder.
+    * **WARNING**: it'll take 1-3 days depending on your computer. Parallel computing version is available.
+
+* To run preprocessing pipeline for Figure 5 and 6, in the SbjLvlProcessing folder, run the runPreprocessing_Main_2Class.m script for 2-class classification and similarly, runPreprocessing_Main_3Class.m script for the 3-class classification.
+    * Estimated running time: up to 8-20 hours.
+
+* To run preprocessing pipeline for Figure 3, 4, 7 & 8, in the SbjLvlProcessing folder, run the runPreprocessing_Others.m script.
+    * Estimated running time: 1-4 hours.
+
+* To generate Figure 3-8, in the SbjLvlProcessing folder, run the genFigures.m script.

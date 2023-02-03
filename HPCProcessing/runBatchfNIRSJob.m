@@ -8,7 +8,7 @@ if getenv('ENVIRONMENT')    % true if this is a batch job
   myCluster.JobStorageLocation = getenv('TMPDIR');  % points to TMPDIR
 end
 
-parpool(myCluster, nslots)
+parpool(myCluster, nslots);
 
 sbjList = {'08'};
 %parfor i = 1:length(sbjList)
@@ -30,10 +30,10 @@ parfor i = 1:length(sbjList)
     rawDataDir = ['/projectnb2/binaural/mhn/RawDatafNIRS/Experiment' num2str(sbjNum)];
     sLoad = load([rawDataDir filesep num2str(sbjNum)]);
     s = sLoad.s;
-    preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Parallel(s,2,1,1,0.5);
-    preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Parallel(s,3,1,1,0.5);
-    preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen_MultiOnly(s,2,1,1,1,0);
-    preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen_MultiOnly(s,3,1,1,1,0);
+    preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Parallel(s,2,1,1,0.5,0);
+    preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Parallel(s,3,1,1,0.5,0);
+    preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen_MultiOnly(s,2,1,1,1,0,0);
+    preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen_MultiOnly(s,3,1,1,1,0,0);
     %createSingleTrialHRF_SSBeta(s.name,s.movieList,2);
     %calcCumSum_DiffStartT_AllChn_CompClassifiers_Final(s.name,2,1);
     close all;

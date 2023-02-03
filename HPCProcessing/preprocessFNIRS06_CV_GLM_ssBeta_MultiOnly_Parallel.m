@@ -2,7 +2,7 @@
 % 
 % SYNTAX:
 % preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Parallel(s,numClasses,...
-%   rejTrOp,rejChnOp,lpFilt)
+%   rejTrOp,rejChnOp,lpFilt,opIsLocal)
 % 
 % DESCRIPTION:
 % Parallel computing version of
@@ -28,7 +28,10 @@
 % rejChnOp - int: option to remove channels based on noise level.
 %       0 - don't remove channels
 %       1 - remove channels
-% lpFilt- int: lowpass bandpass frequency for butterworth filter
+% lpFilt - int: lowpass bandpass frequency for butterworth filter
+% opIsLocal - int: run locally or on SSC
+%       0 - run on SSC
+%       1 - run locally
 %
 % RETURNED VARIABLES:
 % None.
@@ -40,7 +43,7 @@
 % PLOTTING:
 % None.
 
-function preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Parallel(s,numClasses,rejTrOp,rejChnOp,lpFilt)
+function preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Parallel(s,numClasses,rejTrOp,rejChnOp,lpFilt,opIsLocal)
 
 % addpath(genpath('/usr3/graduate/mhn/Documents/ResearchProjects/spatailAttentionProject/'));
 % addpath(genpath('/projectnb2/binaural/mhn/RawDatafNIRS'));
@@ -52,10 +55,14 @@ behData = s.resp;
 startT = s.startT;
 endT = s.endT;
 
-%processedDataDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];
-saveDir = ['/projectnb2/binaural/mhn/RawDatafNIRS/Experiment' num2str(sbjNum)];
-%processedDataDir = ['/usr3/graduate/mhn/Documents/ResearchProjects/spatailAttentionProject/ProcessedDatafNIRS/Experiment' num2str(sbjNum)];
-processedDataDir = ['/projectnb2/binaural/mhn/ProcessedDatafNIRS/Experiment' num2str(sbjNum)];
+if opIsLocal
+    saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];
+    processedDataDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];
+else
+    saveDir = ['/projectnb2/binaural/mhn/RawDatafNIRS/Experiment' num2str(sbjNum)];
+    %processedDataDir = ['/usr3/graduate/mhn/Documents/ResearchProjects/spatailAttentionProject/ProcessedDatafNIRS/Experiment' num2str(sbjNum)];
+    processedDataDir = ['/projectnb2/binaural/mhn/ProcessedDatafNIRS/Experiment' num2str(sbjNum)];
+end
 
 % Convert nirs to snirf file format
 % snirf1 is entire data

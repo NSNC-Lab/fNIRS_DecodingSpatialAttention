@@ -26,3 +26,17 @@ view runfNIRSBash.sh.pe(job_number)
 List of directories:
 /usr3/graduate/mhn
 /projectnb/binaural/mhn
+
+vim tip/commands:
+go to top of file: ESC + gg
+go to bottom of file: SHIFT + g
+go to line: in view mode, enter number
+to save and quit: ":wq"
+to quit without saving: ":q" or ":q!"
+to go to edit mode: type "i"
+
+run MATLAB without desktop:
+matlab -nodisplay
+
+to debug MATLAB without desktop but from command line:
+https://www.mathworks.com/help/releases/R2019b/matlab/debugging-code.html

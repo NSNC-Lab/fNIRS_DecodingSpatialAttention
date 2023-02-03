@@ -2,7 +2,7 @@
 % 
 % SYNTAX:
 % preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen_MultiOnly(s,numClasses,rejTrOp,...
-%   rejChnOp,rerunOp,plotOp)
+%   rejChnOp,rerunOp,plotOp,opIsLocal)
 % 
 % DESCRIPTION:
 % Preprocess raw data (light intensities) and perform cross Validation 
@@ -32,6 +32,9 @@
 % plotOp- int: option to plot results.
 %       0 - don't plot.
 %       1- plot.
+% opIsLocal - int: run locally or on SSC
+%       0 - run on SSC
+%       1 - run locally
 %
 % RETURNED VARIABLES:
 % None.
@@ -46,7 +49,7 @@
 % window length from the start of cue onset for 6 different subsets of
 % probe.
 
-function preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen_MultiOnly(s,numClasses,rejTrOp,rejChnOp,rerunOp,plotOp)
+function preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen_MultiOnly(s,numClasses,rejTrOp,rejChnOp,rerunOp,plotOp,opIsLocal)
 
 sbjNum = s.name;
 rawDataFN = s.fName;
@@ -55,8 +58,14 @@ behData = s.resp;
 startT = s.startT;
 endT = s.endT;
 
-saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];
+if opIsLocal
+    saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];
     processedDataDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];
+else
+    saveDir = ['/projectnb2/binaural/mhn/RawDatafNIRS/Experiment' num2str(sbjNum)];
+    %processedDataDir = ['/usr3/graduate/mhn/Documents/ResearchProjects/spatailAttentionProject/ProcessedDatafNIRS/Experiment' num2str(sbjNum)];
+    processedDataDir = ['/projectnb2/binaural/mhn/ProcessedDatafNIRS/Experiment' num2str(sbjNum)];
+end
 
 fs = 50;
 timeLen = [0.1 0.2 0.5 1 1.5 2 3 4 5].*fs;

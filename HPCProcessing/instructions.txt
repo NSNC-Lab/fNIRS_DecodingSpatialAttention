@@ -1,0 +1,28 @@
+Before running batch file, run below command:
+dos2unix *.sh *.m
+
+Then check status of file using below command:
+file runBatchfNIRSJob.m
+
+Should be ASCII text executable
+
+Finally run the following command:
+qsub -pe omp 8 -l h_rt=28:00:00 ./runfNIRSBash.sh
+
+Helpful tips
+pwd to get current directory
+
+To view current status of job:
+qstat -u mhn
+
+To view outputs:
+view runfNIRSBash.sh.o(job_number)
+view runfNIRSBash.sh.po(job_number)
+
+To view error messages:
+runfNIRSBash.sh.e(job_number)
+view runfNIRSBash.sh.pe(job_number)
+
+List of directories:
+/usr3/graduate/mhn
+/projectnb/binaural/mhn

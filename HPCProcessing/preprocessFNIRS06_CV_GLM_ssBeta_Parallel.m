@@ -1,9 +1,46 @@
-% CV where SS beta coefficients from training fold is passed to test fold
-%
+% STATUS: active.
+% 
+% SYNTAX:
+% preprocessFNIRS06_CV_GLM_ssBeta_Parallel(s,numClasses,...
+%   rejTrOp,rejChnOp,lpFilt)
+% 
+% DESCRIPTION:
+% Parallel computing version of
+%   preprocessFNIRS06_CV_GLM_ssBeta_Version02.m
+%   Preprocess raw data (light intensities) and perform cross validation 
+%   where SS beta coefficients from training fold is passed to test fold.
+%   Perform classification using 6 different classifiers.
+%   Test different decision windows over the duration of trial, all 1 sec long.
+% 
+% RESTRICTION:
 % Only for sbj 08 and 10.
-% Here, focus on multi-movies condition only. Faster
+% 
+% INPUTS:
+% s - struct containing parameters. Ex: variable 's' in
+%   '\RawDatafNIRS\Experiment12\12.mat'.
+% numClasses - int: number of classes for classification.
+%   2 for classification between left and right.
+%   3 for classification between left, right & center.
+% rejTrOp - int: option to reject trials based on whether subject correctly
+%   answer questions and noise level.
+%       0 - don't reject trials
+%       1 - reject trials
+% rejChnOp - int: option to remove channels based on noise level.
+%       0 - don't remove channels
+%       1 - remove channels
+% lpFilt- int: lowpass bandpass frequency for butterworth filter
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) save accuracies of 6 different classifiers for 3 different
+% chromophores tested. File name depend on parameters used.
+% 
+% PLOTTING:
+% None.
 
-function preprocessFNIRS06_CV_GLM_ssBeta_Parallel(s,numClasses,rejTrOp,rejChnOp)
+function preprocessFNIRS06_CV_GLM_ssBeta_Parallel(s,numClasses,rejTrOp,rejChnOp,lpFilt)
 
 sbjNum = s.name;
 rawDataFN = s.fName;
@@ -75,7 +112,7 @@ end
 
 fs = 50;
 %timePt = (0:0.25*fs:5*fs)+2*fs;
-timePt = (0:0.25*fs:8*fs);
+timePt = (0:0.25*fs:7*fs);
 
 % split triggers into 6 categories
 load([saveDir filesep movieList '.mat'],'indexMoviesTest');
@@ -114,7 +151,12 @@ dod = hmrR_Intensity2OD(data);
 [dod] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,4,0.97,5,1);
 %[dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5,0.97,5,1);
 
-tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+%tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+if strcmp(sbjNum,'24')||strcmp(sbjNum,'25')
+    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5);
+else
+    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+end
 %tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,4);
 
 if rejTrOp == 1
@@ -288,9 +330,13 @@ for iRep = 1:nReps
 
         %stimTr = snirf1.stim;
 
-        [stimTr,~] = hmrR_StimRejection(dod,stimTr,tIncAuto,tIncMan,[-2  15]);
+        if rejTrOp == 1
+            [stimTr,~] = hmrR_StimRejection(dod,stimTr,tIncAuto,tIncMan,[-2  15]);
+        end
 
-        dodBPFilt = hmrR_BandpassFilt(dod,0.01,0.5);
+        %dodBPFilt = hmrR_BandpassFilt(dod,0.01,0.5);
+        %dodBPFilt = hmrR_BandpassFilt(dod,0.01,10);
+        dodBPFilt = hmrR_BandpassFilt(dod,0.01,lpFilt);
         %dod = hmrR_BandpassFilt(dod,0,0.5);
 
         dc = hmrR_OD2Conc(dodBPFilt,probe,[1  1  1]);
@@ -299,15 +345,17 @@ for iRep = 1:nReps
 %         [~,~,~,dcNewTr,~,~,~,~,~,~,beta] = hmrR_GLM_ssBeta(dc,stimTr,probe,mlActAuto,Aaux,tIncAuto,rcMap,...
 %             [-2  15],1,1,[1.0 1.0 0.0 0.0 0.0 0.0],15,1,0,0);
         
-        [~,~,~,dcNewTr,~,~,~,~,~,~,betaSS] = hmrR_GLM_HbT(dc,stimTr,probe,mlActAuto,Aaux,tIncAuto,rcMap,...
-            [-2  15],1,1,[1.0 1.0 0.0 0.0 0.0 0.0],15,1,0,0);
-%         [~,~,~,dcNewTr,~,~,~,~,~,~,betaSS] = hmrR_GLM_MN(dc,stimTr,probe,mlActAuto,Aaux,tIncAuto,rcMap,...
+%         [~,~,~,dcNewTr,~,~,~,~,~,~,betaSS] = hmrR_GLM_HbT(dc,stimTr,probe,mlActAuto,Aaux,tIncAuto,rcMap,...
 %             [-2  15],1,1,[1.0 1.0 0.0 0.0 0.0 0.0],15,1,0,0);
+        [~,~,~,dcNewTr,~,~,~,~,~,~,betaSS] = hmrR_GLM_MN(dc,stimTr,probe,mlActAuto,Aaux,tIncAuto,rcMap,...
+            [-2  15],1,1,[1.0 1.0 0.0 0.0 0.0 0.0],15,1,0,0);
 
         % format beta var here
         ssBeta = betaSS{1}(end,:,:);
 
-        [stimTst,~] = hmrR_StimRejection(dod,stimTst,tIncAuto,tIncMan,[-2  15]);
+        if rejTrOp == 1
+            [stimTst,~] = hmrR_StimRejection(dod,stimTst,tIncAuto,tIncMan,[-2  15]);
+        end
 
         % technically, don't need this. Can just use dcNewTr
         dcNewTst = hmrR_ssBeta_CV(data,dc, probe, mlActAuto, tIncAuto, squeeze(ssBeta));
@@ -369,8 +417,7 @@ for iRep = 1:nReps
             indexMoviesTrainMultiple,indexMoviesTestMultiple,numClasses,mlActAuto);
 
     end
-    
-    
+     
 end
 
 % save folds to file
@@ -381,13 +428,20 @@ end
 
 if numClasses == 2
     if rejTrOp
-        fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc.mat'];
+        %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc.mat'];
+        if lpFilt == 10
+            %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc_10Hz.mat'];
+            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_Version02_10Hz.mat'];
+        else
+            %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc.mat'];
+            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_Version02.mat'];
+        end
     else
         fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_SNR_1.5.mat'];
     end
 else
     if rejTrOp
-        fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_RejTr_SNR_1.5.mat'];
+        fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_RejTr_SNR_1.5_10Hz.mat'];
     else
         fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_SNR_1.5.mat'];
     end

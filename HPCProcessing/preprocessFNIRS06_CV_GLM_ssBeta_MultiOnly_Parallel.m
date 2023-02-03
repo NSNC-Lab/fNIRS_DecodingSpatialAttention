@@ -1,11 +1,46 @@
-% CV where SS beta coefficients from training fold is passed to test fold
-% 03/24/2022: Remove rejected trials from classification
-%   Remove cueOnsetIndex, ineffective method. Just directly filter allS
-% Only for sbj 12 and after
+% STATUS: active.
+% 
+% SYNTAX:
+% preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Parallel(s,numClasses,...
+%   rejTrOp,rejChnOp,lpFilt)
+% 
+% DESCRIPTION:
+% Parallel computing version of
+%   preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Version02.m
+%   Preprocess raw data (light intensities) and perform cross validation 
+%   where SS beta coefficients from training fold is passed to test fold.
+%   Perform classification using 6 different classifiers.
+%   Test different decision windows over the duration of trial, all 1 sec long.
+% 
+% RESTRICTION:
+% Only for sbj 12 and afterward.
+% 
+% INPUTS:
+% s - struct containing parameters. Ex: variable 's' in
+%   '\RawDatafNIRS\Experiment12\12.mat'.
+% numClasses - int: number of classes for classification.
+%   2 for classification between left and right.
+%   3 for classification between left, right & center.
+% rejTrOp - int: option to reject trials based on whether subject correctly
+%   answer questions and noise level.
+%       0 - don't reject trials
+%       1 - reject trials
+% rejChnOp - int: option to remove channels based on noise level.
+%       0 - don't remove channels
+%       1 - remove channels
+% lpFilt- int: lowpass bandpass frequency for butterworth filter
+%
+% RETURNED VARIABLES:
+% None.
+% 
+% FILES SAVED:
+% 1) save accuracies of 6 different classifiers for 3 different
+% chromophores tested. File name depend on parameters used.
+% 
+% PLOTTING:
+% None.
 
-% Update dir for SCC
-
-function preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Parallel(s,numClasses,rejTrOp,rejChnOp)
+function preprocessFNIRS06_CV_GLM_ssBeta_MultiOnly_Parallel(s,numClasses,rejTrOp,rejChnOp,lpFilt)
 
 % addpath(genpath('/usr3/graduate/mhn/Documents/ResearchProjects/spatailAttentionProject/'));
 % addpath(genpath('/projectnb2/binaural/mhn/RawDatafNIRS'));
@@ -17,11 +52,11 @@ behData = s.resp;
 startT = s.startT;
 endT = s.endT;
 
-%saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];
 %processedDataDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];
 saveDir = ['/projectnb2/binaural/mhn/RawDatafNIRS/Experiment' num2str(sbjNum)];
 %processedDataDir = ['/usr3/graduate/mhn/Documents/ResearchProjects/spatailAttentionProject/ProcessedDatafNIRS/Experiment' num2str(sbjNum)];
 processedDataDir = ['/projectnb2/binaural/mhn/ProcessedDatafNIRS/Experiment' num2str(sbjNum)];
+
 % Convert nirs to snirf file format
 % snirf1 is entire data
 snirf1 = SnirfClass(load([rawDataFN{1} '.nirs'],'-mat'));
@@ -49,12 +84,12 @@ end
 
 fs = 50;
 %timePt = (0:0.25*fs:5*fs)+2*fs;
-timePt = 0:0.25*fs:8*fs;
+timePt = (0:0.25*fs:7*fs);
 
-idxMLoad = load([saveDir filesep movieList '.mat'],'indexMoviesTest');
-respLoad = load([saveDir filesep behData '.mat'],'responsesA','responsesV','correctRespA','correctRespV');
+load([saveDir filesep movieList '.mat'],'indexMoviesTest');
+load([saveDir filesep behData '.mat'],'responsesA','responsesV','correctRespA','correctRespV');
 
-indexMoviesTest = updateMovieList(allS,idxMLoad.indexMoviesTest);
+indexMoviesTest = updateMovieList(allS,indexMoviesTest);
 
 % dAll = DataClass([snirf1.data.dataTimeSeries; snirf3.data.dataTimeSeries; snirf4.data.dataTimeSeries],...
 %     0:1/50:(size(snirf1.data.dataTimeSeries,1)+size(snirf3.data.dataTimeSeries,1)+size(snirf4.data.dataTimeSeries,1)-1)/50,snirf1.data.measurementList);
@@ -89,7 +124,12 @@ dod = hmrR_Intensity2OD(data);
 [dod] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,4,0.97,5,1);
 %[dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5,0.97,5,1);
 
-tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+%tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+if strcmp(sbjNum,'24')||strcmp(sbjNum,'25')
+    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5);
+else
+    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
+end
 %tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,4);
 
 % Here define stim class solely for trials rejection.
@@ -127,7 +167,7 @@ else
 end
 
 % 90 trials
-trialIdx = (respLoad.responsesA==respLoad.correctRespA)&(respLoad.responsesV==respLoad.correctRespV)&(indexMoviesTest(:,5)==1)'&(indexMoviesTest(:,7)>0)';
+trialIdx = (responsesA==correctRespA)&(responsesV==correctRespV)&(indexMoviesTest(:,5)==1)'&(indexMoviesTest(:,7)>0)';
 if numClasses == 2
     trialIdx = trialIdx & (indexMoviesTest(:,2)==1|indexMoviesTest(:,2)==2)';
 end
@@ -226,9 +266,13 @@ for iRep = 1:nReps
             stimTst(1,3) = centerOnsetMTst;
         end
 
-        [stimTr,~] = hmrR_StimRejection(dod,stimTr,tIncAuto,tIncMan,[-2  15]);
+        if rejTrOp == 1
+            [stimTr,~] = hmrR_StimRejection(dod,stimTr,tIncAuto,tIncMan,[-2  15]);
+        end
 
-        dodBPFilt = hmrR_BandpassFilt(dod,0.01,0.5);
+        %dodBPFilt = hmrR_BandpassFilt(dod,0.01,0.5);
+        %dodBPFilt = hmrR_BandpassFilt(dod,0.01,10);
+        dodBPFilt = hmrR_BandpassFilt(dod,0.01,lpFilt);
 
         dc = hmrR_OD2Conc(dodBPFilt,probe,[1  1  1]);
 
@@ -243,8 +287,10 @@ for iRep = 1:nReps
         % format beta var here
         ssBeta = betaSS{1}(end,:,:);
 
-        [stimTst,~] = hmrR_StimRejection(dod,stimTst,tIncAuto,tIncMan,[-2  15]);
-
+        if rejTrOp == 1
+            [stimTst,~] = hmrR_StimRejection(dod,stimTst,tIncAuto,tIncMan,[-2  15]);
+        end
+        
         % actually this is not needed, can use stimTst on dcNewTr.
         dcNewTst = hmrR_ssBeta_CV(data,dc, probe, mlActAuto, tIncAuto, squeeze(ssBeta));
 
@@ -302,14 +348,23 @@ end
 
 if numClasses == 2
     if rejTrOp
-        fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigFunc.mat'];
+        %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3.mat'];
+        %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3_0p5s.mat'];
+        
+        if lpFilt == 10
+            %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3_10Hz.mat'];
+            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_Version02_10Hz.mat'];
+        else
+            %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_OrigHomer3.mat'];
+            fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_Version02.mat'];
+        end
         %fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_RejTr_SNR_1.5_NewHomer3.mat'];
     else
         fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_LR_SNR_1.5.mat'];
     end
 else
     if rejTrOp
-        fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_RejTr_SNR_1.5.mat'];
+        fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_RejTr_SNR_1.5_10Hz.mat'];
     else
         fileName = [processedDataDir filesep 'performance_GLM_CV_SSBeta_SNR_1.5.mat'];
     end

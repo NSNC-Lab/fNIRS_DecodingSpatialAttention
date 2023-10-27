@@ -1,17 +1,17 @@
-% STATUS: inactive.
+% STATUS: active.
 % 
 % SYNTAX:
-% preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen(s,numClasses,rejTrOp,rejChnOp,...
-%   rerunOp,plotOp)
+% preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen_MultiOnly-Sudan(s,numClasses,rejTrOp,...
+%   rejChnOp,rerunOp,plotOp,opIsLocal)
 % 
 % DESCRIPTION:
-% Preprocess raw data (light intensities) and perform cross validation 
-%   where SS beta coefficients from training fold is passed to test fold.
-%   Perform all-channel classification using regularized LDA.
-%   Test different decision window lengths, all start at cue onset.
+% Preprocess raw data (light intensities) and perform cross Validation 
+% where SS beta coefficients from training fold is passed to test fold.
+% Perform classification using 6 different classifiers.
+% Test different decision window lengths, all start at cue onset.
 % 
 % RESTRICTION:
-% Only for sbj 08 and 10.
+% Only for sbj 12 and afterward.
 % 
 % INPUTS:
 % s - struct containing parameters. Ex: variable 's' in
@@ -32,6 +32,9 @@
 % plotOp- int: option to plot results.
 %       0 - don't plot.
 %       1- plot.
+% opIsLocal - int: run locally or on SSC
+%       0 - run on SSC
+%       1 - run locally
 %
 % RETURNED VARIABLES:
 % None.
@@ -43,11 +46,10 @@
 % 
 % PLOTTING:
 % When plotOp = 1, will plot decoding performance as a function of decision
-% window length from the start of cue onset for different subsets of
+% window length from the start of cue onset for 6 different subsets of
 % probe.
-% preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen('08',2,1,1,1,1,1)
 
-function preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen(s,numClasses,rejTrOp,rejChnOp,rerunOp,plotOp,opIsLocal)
+function preprocessFNIRS06_CV_GLM_ssBeta_DiffTLen_MultiOnly_Sudan(s,numClasses,rejTrOp,rejChnOp,rerunOp,plotOp,opIsLocal)
 
 filefolder = fullfile('H:\My Drive\fNIRS\sudan_final_all_roi_data_paper\', ['Experiment', num2str(s),'\',num2str(s),'.mat']);
 addpath_exp_folder = fullfile('H:\My Drive\fNIRS\sudan_final_all_roi_data_paper\', ['Experiment', num2str(s)]);
@@ -62,6 +64,8 @@ startT = s.startT;
 endT = s.endT;
 
 %% load s and add paths
+%%
+
 
 addpath 'H:\My Drive\fNIRS\fnirs_processing_pipeline\ProcessingCodefNIRS-main' %path for sudan_new_code
 
@@ -80,6 +84,7 @@ addpath 'H:\My Drive\fNIRS\fnirs_processing_pipeline\GroupProcessingfNIRS-main'
 addpath 'H:\My Drive\fNIRS\fnirs_processing_pipeline\ProcessingCodeClassifier-main'
 addpath 'H:\My Drive\fNIRS\sudan_final_all_roi_data_paper'
 addpath(addpath_exp_folder);
+
 %%
 
 if opIsLocal
@@ -101,32 +106,15 @@ if rerunOp
     
     % Convert nirs to snirf file format
     % snirf1 is entire data
-    % snirf1 is entire data
     snirf1 = SnirfClass(load([rawDataFN{1} '.nirs'],'-mat'));
-    snirf3 = SnirfClass(load([rawDataFN{2} '.nirs'],'-mat'));
-    snirf4 = SnirfClass(load([rawDataFN{3} '.nirs'],'-mat'));
     snirf1.Info()
 
     % Extract aux and convert to stimclass
     allS2 = find(snirf1.aux(1,1).dataTimeSeries>1);
     aInd2 = find(allS2(2:end)-allS2(1:end-1)==1);
-    allS3 = find(snirf3.aux(1,1).dataTimeSeries>1);
-    aInd3 = find(allS3(2:end)-allS3(1:end-1)==1);
-    allS4 = find(snirf4.aux(1,1).dataTimeSeries>1);
-    aInd4 = find(allS4(2:end)-allS4(1:end-1)==1);
+
     allS2(aInd2) = [];
     allS2 = allS2./50;
-    allS3(aInd3) = [];
-    allS3 = allS3./50;
-    allS4(aInd4) = [];
-    allS4 = allS4./50;
-    
-    snirf2TLen = size(snirf1.data.time,1)/(50);
-    snirf3TLen = size(snirf3.data.time,1)/(50);
-    allS3 = allS3+snirf2TLen;
-    allS4 = allS4+snirf2TLen+snirf3TLen;
-
-    allS = [allS2; allS3; allS4];
 
     if strcmp(sbjNum,'08')||strcmp(sbjNum,'10')
         cueOnsetIndex = 1:4:720;
@@ -134,7 +122,7 @@ if rerunOp
         cueOnsetIndex = 1:4:360;
     end
 
-    allS = allS(cueOnsetIndex);
+    allS = allS2(cueOnsetIndex);
 
     if startT ~= 1
         % allS is in sec
@@ -146,11 +134,11 @@ if rerunOp
 
     indexMoviesTest = updateMovieList(allS,indexMoviesTest);
 
-    dAll = DataClass([snirf1.data.dataTimeSeries; snirf3.data.dataTimeSeries; snirf4.data.dataTimeSeries],...
-        0:1/50:(size(snirf1.data.dataTimeSeries,1)+size(snirf3.data.dataTimeSeries,1)+size(snirf4.data.dataTimeSeries,1)-1)/50,snirf1.data.measurementList);
+    % dAll = DataClass([snirf1.data.dataTimeSeries; snirf3.data.dataTimeSeries; snirf4.data.dataTimeSeries],...
+    %     0:1/50:(size(snirf1.data.dataTimeSeries,1)+size(snirf3.data.dataTimeSeries,1)+size(snirf4.data.dataTimeSeries,1)-1)/50,snirf1.data.measurementList);
 
-%     dAll = DataClass(snirf1.data.dataTimeSeries,...
-%         0:1/50:(size(snirf1.data.dataTimeSeries,1)-1)/50,snirf1.data.measurementList);
+    dAll = DataClass(snirf1.data.dataTimeSeries,...
+        0:1/50:(size(snirf1.data.dataTimeSeries,1)-1)/50,snirf1.data.measurementList);
 
     if endT ~= -1
         dAll.dataTimeSeries = dAll.dataTimeSeries(startT*fs:endT*fs,:);
@@ -167,8 +155,8 @@ if rerunOp
     Aaux = [];
     rcMap = [];
 
-    %mlActAuto = hmrR_PruneChannels(data,probe,mlActMan,tIncMan,[10000  10000000],2,[0  45]);
     if rejChnOp
+        % Consider replacing this one with Welsh periodogram method.
         %mlActAuto = hmrR_PruneChannels(data,probe,mlActMan,tIncMan,[10000  10000000],2,[0  45]);
         mlActAuto = hmrR_PruneChannels(data,probe,mlActMan,tIncMan,[7000  10000000],1.5,[0  45]);
     else
@@ -183,14 +171,14 @@ if rerunOp
     %[dod,tInc,svs,nSV,tInc0] = hmrR_MotionCorrectPCArecurse(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5,0.97,5,1);
 
     %tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
-    %if strcmp(sbjNum,'24')||strcmp(sbjNum,'25')
+   % if strcmp(sbjNum,'24')||strcmp(sbjNum,'25')
         tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,5);
     %else
         tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5);
     %end
     %tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,20,4);
 
-    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5); % making sure everything is passed through same
+    tIncAuto = hmrR_MotionArtifact(dod,probe,mlActMan,mlActAuto,tIncMan,0.5,1,15,5); % to ensure everything is same
 
     % Here define stim class solely for trials rejection.
     %[stimTr,~] = hmrR_StimRejection(dod,stim,tIncAuto,tIncMan,[-2  15]);
@@ -364,6 +352,10 @@ if rerunOp
             dc = hmrR_OD2Conc(dodBPFilt,probe,[1  1  1]);
 
             % GLM here
+            % original beta var only returns coefficient for temporal basis
+%             [~,~,~,dcNewTr,~,~,betaOrig,~,~,~,beta] = hmrR_GLM_ssBeta(dc,stimTr,probe,mlActAuto,Aaux,tIncAuto,rcMap,...
+%                 [-2  15],1,1,[1.0 1.0 0.0 0.0 0.0 0.0],15,1,0,0);
+
             [~,~,~,dcNewTr,~,~,~,~,~,~,betaSS] = hmrR_GLM_MN(dc,stimTr,probe,mlActAuto,Aaux,tIncAuto,rcMap,...
                 [-2  15],1,1,[1.0 1.0 0.0 0.0 0.0 0.0],15,1,0,0);
 
@@ -596,8 +588,8 @@ end
     
 if plotOp
     
-    figSaveDir = ['H:\My Drive\fNIRS\sudan_final_all_roi_data_paper\Experiment' ...
-        num2str(sbjNum) '\Figures\Classification'];
+    %figSaveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' ...
+        %num2str(sbjNum) '\Figures\Classification'];
 
     yLimAxis = [0 1];
     

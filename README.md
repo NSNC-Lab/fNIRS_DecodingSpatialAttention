@@ -7,7 +7,7 @@
 
  For "Decoding Attended Spatial Location during Complex Scene Analysis with fNIRS."
 
-**Authors**: Matthew Ning, Meryem Yücel, Alexander Von Lühmann, David A Boas, Kamal Sen.
+**Authors**: Matthew Ning, Sudan Duwadi, Meryem Yücel, Alexander Von Lühmann, David A Boas, Kamal Sen.
 
 **Affliation**: Neurophotonics Center, Department of Biomedical Engineering, Boston University.
 

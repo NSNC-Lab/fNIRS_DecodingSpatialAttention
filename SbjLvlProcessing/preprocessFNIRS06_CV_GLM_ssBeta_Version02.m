@@ -22,7 +22,7 @@
 % rejTrOp - int: option to reject trials based on whether subject correctly
 %   answer questions and noise level.
 %       0 - don't reject trials
-%       1 - reject trials
+%       1 - reject trialsRSTG
 % rejChnOp - int: option to remove channels based on noise level.
 %       0 - don't remove channels
 %       1 - remove channels
@@ -37,8 +37,34 @@
 % 
 % PLOTTING:
 % None.
+% preprocessFNIRS06_CV_GLM_ssBeta_Version02('08',1,1,1,1)
 
 function preprocessFNIRS06_CV_GLM_ssBeta_Version02(s,numClasses,rejTrOp,rejChnOp,lpFilt)
+
+filefolder = fullfile('H:\My Drive\fNIRS\sudan_final_all_roi_data_paper\', ['Experiment', num2str(s),'\',num2str(s),'.mat']);
+addpath_exp_folder = fullfile('H:\My Drive\fNIRS\sudan_final_all_roi_data_paper\', ['Experiment', num2str(s)]);
+
+load(filefolder)
+
+%% load s and add paths
+
+addpath 'H:\My Drive\fNIRS\fnirs_processing_pipeline\ProcessingCodefNIRS-main' %path for sudan_new_code
+
+addpath 'H:\My Drive\fNIRS\fnirs_processing_pipeline\ProcessingCodefNIRS-main\Homer3-master'
+
+addpath 'H:\My Drive\fNIRS\fnirs_processing_pipeline\ProcessingCodefNIRS-main\Homer3-master\Utils'
+
+cd 'H:\My Drive\fNIRS\fnirs_processing_pipeline\ProcessingCodefNIRS-main\Homer3-master'
+
+setpaths %homer function to setpaths for its dependencies
+
+%% addpath for dependent files/functions
+
+addpath 'H:\My Drive\fNIRS\fnirs_processing_pipeline\ProcessingCodefNIRS-main\Classification'
+addpath 'H:\My Drive\fNIRS\fnirs_processing_pipeline\GroupProcessingfNIRS-main'
+addpath 'H:\My Drive\fNIRS\fnirs_processing_pipeline\ProcessingCodeClassifier-main'
+addpath 'H:\My Drive\fNIRS\sudan_final_all_roi_data_paper'
+addpath(addpath_exp_folder);
 
 sbjNum = s.name;
 rawDataFN = s.fName;
@@ -47,8 +73,10 @@ behData = s.resp;
 startT = s.startT;
 endT = s.endT;
 
-saveDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\RawDatafNIRS\Experiment' num2str(sbjNum)];
-processedDataDir = ['C:\Users\mn0mn\Documents\ResearchProjects\spatailAttentionProject\ProcessedDatafNIRS\Experiment' num2str(sbjNum)];
+
+saveDir = ['H:\My Drive\fNIRS\sudan_final_all_roi_data_paper\Experiment' num2str(sbjNum)];
+processedDataDir = ['H:\My Drive\fNIRS\sudan_final_all_roi_data_paper\Experiment' num2str(sbjNum)];
+
 % Convert nirs to snirf file format
 % snirf1 is entire data
 snirf1 = SnirfClass(load([rawDataFN{1} '.nirs'],'-mat'));
